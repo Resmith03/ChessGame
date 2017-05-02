@@ -23,5 +23,13 @@ public class GameBoard {
 	}
 	
 	private void setInitialPieceLocations(){
+		pieceLocations.put("A7", new Pawn("white", "A7"));
+		pieceLocations.put("B7", new Pawn("white", "B7"));
+		pieceLocations.put("C7", new Pawn("white", "C7"));
+		pieceLocations.put("D7", new Pawn("white", "D7"));
+		pieceLocations.put("E7", new Pawn("white", "E7"));
+		pieceLocations.put("F7", new Pawn("white", "F7"));
+		pieceLocations.put("G7", new Pawn("white", "G7"));
+		pieceLocations.put("H7", new Pawn("white", "H7"));
 	}
 }

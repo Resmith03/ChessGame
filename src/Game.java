@@ -4,6 +4,8 @@ import java.util.Scanner;
 public class Game {
 	
 	private static String[][] gameBoard;
+	public static Player blackPlayer;
+	public static Player whitePlayer;
 	
 	public static void main(String args[]){
 		gameStart();
@@ -19,10 +21,10 @@ public class Game {
 		System.out.println("Welcome to Chess");
 		String[][] initialBoardState = {{"r", "n", "b", "q", "k", "b", "n", "r"},
 				   						{"p", "p", "p", "p", "p", "p", "p", "p"},
-				   						{" ", " ", " ", " ", " ", " ", " ", " "},
-				   						{" ", " ", " ", " ", " ", " ", " ", " "},
-				   						{" ", " ", " ", " ", " ", " ", " ", " "},
-				   						{" ", " ", " ", " ", " ", " ", " ", " "},
+				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
+				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
+				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
+				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
 				   						{"P", "P", "P", "P", "P", "P", "P", "P"},
 				   						{"R", "N", "B", "Q", "K", "B", "N", "R"}};
 		gameBoard = initialBoardState;
