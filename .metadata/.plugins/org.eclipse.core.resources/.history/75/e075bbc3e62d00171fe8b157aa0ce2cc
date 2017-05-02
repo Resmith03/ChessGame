@@ -1,0 +1,16 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Writer;
+import java.net.Socket;
+
+public class Client {
+	private static final int PORT = 1321;
+	private Socket socket;
+	private BufferedReader input;
+	private Writer output;
+	
+	public Client(String serverAddress) throws Exception{
+		socket = new Socket(serverAddress, PORT);
+		input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	}
+}

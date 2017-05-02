@@ -1,0 +1,17 @@
+import java.net.ServerSocket;
+
+public class Server {
+	private static final int PORT = 1321;
+	
+	public static void main(String args[]){
+		ServerSocket listener = new ServerSocket(PORT);
+		System.out.println("Starting Chess Server...");
+		try{
+			while(true){
+				Game game = new Game(){
+				Game.Player black = game.new 
+				}
+			}
+		}
+	}
+}

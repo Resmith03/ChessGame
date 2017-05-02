@@ -1,0 +1,60 @@
+import java.util.Scanner;
+
+public class Game {
+	
+	private static String[][] gameBoard;
+	
+	public static void main(String args[]){
+		gameStart();
+		printBoard();
+		while(true){
+			Scanner sc = new Scanner(System.in);
+			System.out.println("Please input piece location:");
+			String start = sc.next();
+			System.out.println("Move piece to where?");
+			String end = sc.next();
+		}
+	}
+	
+	private static void gameStart(){	
+		System.out.println("Welcome to Chess");
+		String[][] initialBoardState = {{"r", "n", "b", "q", "k", "b", "n", "r"},
+				   						{"p", "p", "p", "p", "p", "p", "p", "p"},
+				   						{" ", " ", " ", " ", " ", " ", " ", " "},
+				   						{" ", " ", " ", " ", " ", " ", " ", " "},
+				   						{" ", " ", " ", " ", " ", " ", " ", " "},
+				   						{" ", " ", " ", " ", " ", " ", " ", " "},
+				   						{"P", "P", "P", "P", "P", "P", "P", "P"},
+				   						{"R", "N", "B", "Q", "K", "B", "N", "R"}};
+		gameBoard = initialBoardState;
+	}
+	
+	private static void printBoard(){
+		int rowCoord = 8;
+		char columnCoord = 'A';
+		for(String[] row : gameBoard){
+			System.out.print(String.valueOf(rowCoord)+"...");
+			for(String space : row){
+				System.out.print(space + " ");
+			}
+			rowCoord--;
+			System.out.println("");
+		}
+		System.out.print("    ");
+		for(int i = 0; i < gameBoard[0].length; i++){
+			System.out.print(columnCoord+" ");
+			columnCoord++;
+		}
+		System.out.println("");
+	}
+	
+	private static void move(String from, String to){
+		if(from.length() > 2){
+			System.out.println("Invalid starting location.");
+		}
+		if(to.length() > 2){
+			System.out.println("Invalid ending location.");
+		}
+		char 
+	}
+}
