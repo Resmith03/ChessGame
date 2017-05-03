@@ -1,3 +1,4 @@
+package com.rsmith.models;
 import java.util.ArrayList;
 
 public interface GamePiece {
