@@ -22,7 +22,9 @@ public class Server implements Runnable {
     public void run() {
 	while (true) {
 	    try {
+		System.out.println("Listening for client connection...");
 		Socket socket = listener.accept();
+		System.out.println("Got client connection...");
 		Player player = new Player("Player " + (clientList.size() + 1));
 		Client client = new Client(player, socket);
 		clientList.add(client);
