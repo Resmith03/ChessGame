@@ -29,7 +29,7 @@ public class Client implements Runnable {
     }
 
     public List<String> getOutputMessages() {
-	return outputList;
+	return new ArrayList<String>(outputList);
     }
 
     public PrintWriter getWriter() {
@@ -39,14 +39,19 @@ public class Client implements Runnable {
     public void clearOutputMessages() {
 	outputList.clear();
     }
-
-    public void addOutputMessage(String message) {
+    
+    public void sendMessage(String message){
 	outputList.add(message);
+    }
+    
+    public List<String> getMessages(){
+	return inputList;
     }
 
     public BufferedReader getReader() {
 	return reader;
     }
+    
     public boolean isConnected(){
 	boolean connected = false;
 	
@@ -67,5 +72,10 @@ public class Client implements Runnable {
 
     public void addInputMessage(String message) {
 	inputList.add(message);
+    }
+
+    public void clearInputMessages() {
+	inputList.clear();
+	
     }
 }

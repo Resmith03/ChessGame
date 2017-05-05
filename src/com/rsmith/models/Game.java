@@ -1,57 +1,63 @@
 package com.rsmith.models;
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.List;
 
-public class Game {
+import com.rsmith.server.Client;
+
+public class Game implements Runnable {
 	
-	private static String[][] gameBoard;
-	public static Player blackPlayer;
-	public static Player whitePlayer;
+	private String[][] gameBoard;
+	public Client blackPlayer;
+	public Client whitePlayer;
+	public Client currentPlayer;
 	
-	public static void main(String args[]){
-		gameStart();
-		printBoard();
-		while(isKingAlive()){
-		    getMove();
-		    printBoard();
-		}
-		
+	public Game(Client blackPlayer, Client whitePlayer){
+	    this.blackPlayer = blackPlayer;
+	    this.whitePlayer = whitePlayer;
 	}
 	
-	private static void gameStart(){	
-		System.out.println("Welcome to Chess");
-		String[][] initialBoardState = {{"r", "n", "b", "q", "k", "b", "n", "r"},
-				   						{"p", "p", "p", "p", "p", "p", "p", "p"},
-				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
-				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
-				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
-				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
-				   						{"P", "P", "P", "P", "P", "P", "P", "P"},
-				   						{"R", "N", "B", "Q", "K", "B", "N", "R"}
-				   						};
+	private void broadcast(String message){
+	    blackPlayer.sendMessage(message);
+	    whitePlayer.sendMessage(message);
+	}
+	
+	private void gameStart(){	
+		
+		broadcast("Welcome to Chess");
+		String[][] initialBoardState = {
+			{"r", "n", "b", "q", "k", "b", "n", "r"},
+			{"p", "p", "p", "p", "p", "p", "p", "p"},
+			{"-", "-", "-", "-", "-", "-", "-", "-"},
+			{"-", "-", "-", "-", "-", "-", "-", "-"},
+			{"-", "-", "-", "-", "-", "-", "-", "-"},
+			{"-", "-", "-", "-", "-", "-", "-", "-"},
+			{"P", "P", "P", "P", "P", "P", "P", "P"},
+			{"R", "N", "B", "Q", "K", "B", "N", "R"}
+		};
+		
 		gameBoard = initialBoardState;
 	}
 	
-	private static void printBoard(){
-		int rowCoord = 1;
-		char columnCoord = 'A';
+	private void printBoard(){		
+		int rowCounter = 1;
+		String space = "----------";
+		broadcast(space);
+		broadcast(space);
+		broadcast(space);
+		broadcast(space);
 		for(String[] row : gameBoard){
-			System.out.print(String.valueOf(rowCoord)+"...");
-			for(String space : row){
-				System.out.print(space + " ");
+			
+			String line = String.valueOf(rowCounter++) + "...";
+			
+			for(String col : row){
+				line += (col + " ");
 			}
-			rowCoord++;
-			System.out.println("");
+			
+			broadcast(line);
 		}
-		System.out.print("    ");
-		for(int i = 0; i < gameBoard[0].length; i++){
-			System.out.print(columnCoord+" ");
-			columnCoord++;
-		}
-		System.out.println("");
 	}
 	
-	private static boolean checkInput(String input){
+	private boolean checkInput(String input){
 		if(input.length() != 2){
 			return false;
 		}
@@ -71,29 +77,64 @@ public class Game {
 		}
 	}
 	
-	private static void getMove(){
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Please input piece location:");
-		String start = sc.next();
+	private String getCurrentPlayerInput(){
+	    currentPlayer.clearInputMessages();
+	    
+	    String response = "";
+	    
+	    boolean inputValid = false;
+	    
+	    while(inputValid == false){
+		List<String> inputList = currentPlayer.getMessages();
+		
+		if(inputIsValid(inputList)){
+		    inputValid = true;
+		    response = inputList.get(0);
+		}else{
+		    try {
+			Thread.sleep(1000);
+		    } catch (InterruptedException e) {
+			e.printStackTrace();
+		    }
+		}
+	    }
+	    
+	    return response;
+	}
+	
+	private boolean inputIsValid(List<String> inputs){
+	    boolean valid = false;
+	    
+	    //need to add check for format
+	    if(inputs != null && inputs.size() > 0){
+		valid = true;
+	    }
+	    
+	    return valid;
+	}
+	private void getMove(){
+		currentPlayer.sendMessage("Please input piece location:");
+		String start = getCurrentPlayerInput();
+		
 		String end = "";
 		if(start != " "){
 			if(checkInput(start)){
-				System.out.println("Move piece to where?");
-				end = sc.next();
+				currentPlayer.sendMessage("Move piece to where?");
+				end = getCurrentPlayerInput();
 			}
 			else{
-				System.out.print("Invalid input. ");
+				currentPlayer.sendMessage("Invalid input. ");
 				getMove();
 			}
 		}
 		else {
-			System.out.println("There is no piece there.");
+		    	currentPlayer.sendMessage("There is no piece there.");
 			getMove();
 		}
 		move(start, end);
 	}
 	
-	private static void move(String from, String to){
+	private void move(String from, String to){
 		HashMap<Character, Integer> xCoords = new HashMap<Character, Integer>();
 		xCoords.put('A', 1);
 		xCoords.put('B', 2);
@@ -114,7 +155,7 @@ public class Game {
 		gameBoard[endY-1][endX-1] = piece;
 	}
 	
-	private static boolean isKingAlive(){
+	private boolean isKingAlive(){
 		boolean blackKing = false;
 		boolean whiteKing = false;
 		for(String[] row: gameBoard){
@@ -128,5 +169,25 @@ public class Game {
 			}
 		}
 		return blackKing && whiteKing;
+	}
+
+	@Override
+	public void run() {
+	    gameStart();
+	    printBoard();
+	    currentPlayer = whitePlayer;
+	    while(isKingAlive()){
+		getMove();
+		printBoard();
+		updateTurn();
+	    }
+	}
+	
+	private void updateTurn(){
+	    if(currentPlayer.equals(blackPlayer)){
+		currentPlayer = whitePlayer;
+	    }else{
+		currentPlayer = blackPlayer;
+	    }
 	}
 }

@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rsmith.models.Game;
 import com.rsmith.models.Player;
 
 public class Server implements Runnable {
@@ -30,6 +31,10 @@ public class Server implements Runnable {
 		Client client = new Client(player, socket);
 		clientList.add(client);
 		new Thread(client).start();
+		
+		if(clientList.size() > 1){
+		    new Thread(new Game(clientList.get(0), clientList.get(1))).start();
+		}
 		Thread.sleep(100);
 	    } catch (IOException e) {
 		e.printStackTrace();
@@ -38,4 +43,5 @@ public class Server implements Runnable {
 	    }
 	}
     }
+    
 }

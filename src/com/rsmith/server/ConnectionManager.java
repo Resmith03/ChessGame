@@ -50,10 +50,12 @@ public class ConnectionManager implements Runnable {
 		
 		for(String message:messages){
 		    client.getWriter().println(message);
+		    client.getWriter().flush();
 		}
 		
+		
 		try {
-		    Thread.sleep(1000);
+		    Thread.sleep(100);
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		}
