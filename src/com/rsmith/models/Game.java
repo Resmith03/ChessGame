@@ -12,10 +12,10 @@ public class Game {
 		gameStart();
 		printBoard();
 		while(isKingAlive()){
-			getMove();
-			printBoard();
+		    getMove();
+		    printBoard();
 		}
-		System.out.println("GAME OVER");
+		
 	}
 	
 	private static void gameStart(){	
@@ -27,7 +27,8 @@ public class Game {
 				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
 				   						{"-", "-", "-", "-", "-", "-", "-", "-"},
 				   						{"P", "P", "P", "P", "P", "P", "P", "P"},
-				   						{"R", "N", "B", "Q", "K", "B", "N", "R"}};
+				   						{"R", "N", "B", "Q", "K", "B", "N", "R"}
+				   						};
 		gameBoard = initialBoardState;
 	}
 	

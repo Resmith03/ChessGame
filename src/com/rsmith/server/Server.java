@@ -10,12 +10,13 @@ import com.rsmith.models.Player;
 
 public class Server implements Runnable {
     private static final int PORT = 1321;
-    ServerSocket listener;
+    private ServerSocket listener;
     private List<Client> clientList;
-
+    
     public Server() throws IOException {
 	listener = new ServerSocket(PORT);
 	clientList = new ArrayList<Client>();
+	
     }
 
     @Override
@@ -29,7 +30,10 @@ public class Server implements Runnable {
 		Client client = new Client(player, socket);
 		clientList.add(client);
 		new Thread(client).start();
+		Thread.sleep(100);
 	    } catch (IOException e) {
+		e.printStackTrace();
+	    } catch (InterruptedException e) {
 		e.printStackTrace();
 	    }
 	}
