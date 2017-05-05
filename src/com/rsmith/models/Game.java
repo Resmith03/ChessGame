@@ -1,15 +1,20 @@
 package com.rsmith.models;
-import java.util.HashMap;
 import java.util.List;
 
 import com.rsmith.server.Client;
 
+/**
+ * 
+ * Controls the main operations of the game and coordinates with the players and board
+ *
+ */
 public class Game implements Runnable {
 	
 	private Client player1;
 	private Client player2;
 	private Client currentPlayer;
 	private GameBoard gameBoard;
+	private static final String INPUT_ERROR_MESSAGE = "Error processing move. Please ensure you are moving the right color and selected a valid space.";
 	
 	public Game(Client player1, Client player2){
 	    this.player1 = player1;
@@ -21,10 +26,6 @@ public class Game implements Runnable {
 	public void broadcast(String message){
 	    player1.sendMessage(message);
 	    player2.sendMessage(message);
-	}
-	
-	private void gameStart(){	
-	    broadcast("Welcome to Frostburg State University: Chess");
 	}
 	
 	private void printBlankLines(int lines){
@@ -49,126 +50,149 @@ public class Game implements Runnable {
 	}
 	private void printFooter(){
 	    broadcast("----------------------------------");
-	    broadcast("><><><><><><><><><><><><><><><><><");
-	    broadcast("----------------------------------");
 	}
 	
 	private void printHeader() {
-	    
+	    broadcast("                                  ");
+	    broadcast("         WHITE = UPPERCASE        ");
+	    broadcast("         BLACK = LOWERCASE        ");
 	    broadcast("----------------------------------");
-	    broadcast("WHITE = UPPERCASE BLACK= LOWERCASE");
-	    broadcast("----------------------------------");
-	    broadcast(" Col:  A  B  C  D  E  F  G  H     ");
+	    broadcast("       A  B  C  D  E  F  G  H     ");
 	    broadcast("----------------------------------");
 	}
 	
-	private boolean checkInput(String input){
+	private boolean validLength(String input){
 	    boolean valid = true;
 	    
 	    if(input.length() != 2){
 		valid = false;
 	    }
 	    
-	    String firstChar = input.substring(0, 1);
-	    String secondChar = input.substring(1, input.length());
+	    return valid;
+	}
+	
+	private boolean validFormat(String input){
+	    boolean valid = false;
+	    
+	    String firstChar = String.valueOf(input.charAt(0));
+	    String secondChar = String.valueOf(input.charAt(1));
 		
-	    if(!firstChar.matches("^[A-Z]+$") || !secondChar.matches("^[0-9]+$")){
+	    if(firstChar.matches("^[A-Z]+$") && secondChar.matches("^[0-9]+$")){
+		valid = true;
+	    }
+	    
+	    return valid;
+	}
+	
+	private boolean validRange(String input){
+	    boolean valid = true;
+	    
+	    char x = input.charAt(0);
+	    int y = Character.getNumericValue(input.charAt(1));
+	    
+	    if(x < 'A' || x > 'H' || y < 1 || y > 8){
 		valid = false;
 	    }
 	    
-	    char xCoord = input.charAt(0);
-	    int yCoord = Integer.valueOf(input.substring(1, input.length()));
-	    if(xCoord < 'A' || xCoord > 'H' || yCoord < 1 || yCoord > 8){
-		valid = false;
+	    return valid;
+	    
+	}
+	
+	private boolean checkInput(String input){
+	    boolean valid = false;
+	    
+	    if(validLength(input)){
+		if(validFormat(input)){
+		    if(validRange(input)){
+			valid = true;
+		    }
+		}
 	    }
 	    
 	    return valid;
 	}
 	
 	private String getCurrentPlayerInput(){
-	    currentPlayer.clearInputMessages();
-	    
 	    String response = "";
 	    
 	    boolean inputValid = false;
 	    
 	    while(inputValid == false){
 		List<String> inputList = currentPlayer.getMessages();
-		
-		if(inputIsValid(inputList)){
-		    inputValid = true;
-		    response = inputList.get(0);
-		}else{
-		    try {
-			Thread.sleep(1000);
-		    } catch (InterruptedException e) {
-			e.printStackTrace();
+		if(inputList != null && inputList.size() > 0){
+		    String input = inputList.get(0);
+		    
+		    if(checkInput(input)){
+			inputValid=true;
+			response = input;
+		    }else{
+			currentPlayer.clearInputMessages();
+			currentPlayer.sendMessage("Invlid input format!");
+			sleep(1000);
 		    }
+		}else{
+		    sleep(1000);
 		}
 	    }
 	    
 	    return response;
 	}
 	
-	private boolean inputIsValid(List<String> inputs){
-	    boolean valid = false;
-	    
-	    if(inputs != null && inputs.size() > 0){
-		valid = checkInput(inputs.get(0));
-		if(valid == false){
-		    currentPlayer.sendMessage("Invlid input format!");
-		    currentPlayer.clearInputMessages();
-		}
+	private void sleep(int millis){
+	    try {
+		Thread.sleep(millis);
+	    } catch (InterruptedException e) {
+		e.printStackTrace();
 	    }
-	    
-	    return valid;
+	}	
+	
+	private Location askForLocation(String question){
+	    currentPlayer.clearInputMessages();
+	    currentPlayer.sendMessage("Player: " + currentPlayer.getPlayer().getColor() + " " + question);
+	    String input = getCurrentPlayerInput();	    
+	    return convertInputToLocation(input);
 	}
+	
 	private void getMove(){
-		currentPlayer.sendMessage("Player: " + currentPlayer.getPlayer().getColor() +" Please input piece location (ex. B2):");
-		String start = getCurrentPlayerInput();
+		Location start = askForLocation("Please input piece location (ex. B2):");
+		Location end = askForLocation("Move piece to what location (ex. B3)?");
 		
-		String end = "";
-		if(start != " "){
-			if(checkInput(start)){
-				currentPlayer.sendMessage("Player: " + currentPlayer.getPlayer().getColor() + " Move piece to what location (ex. B3)?");
-				end = getCurrentPlayerInput();
-			}
-			else{
-				currentPlayer.sendMessage("Invalid input. ");
-				getMove();
-			}
-		}
-		else {
-		    	currentPlayer.sendMessage("There is no piece there.");
-			getMove();
-		}
-		
-		if(!move(start, end)){
-		    currentPlayer.sendMessage("Error processing move. Please ensure you are moving the right color and selected a valid space.");
+		if(!gameBoard.move(currentPlayer.getPlayer(), start, end)){
+		    currentPlayer.sendMessage(INPUT_ERROR_MESSAGE);
 		    getMove();
 		}
 	}
 	
-	private boolean move(String from, String to){
-		HashMap<Character, Integer> xCoords = new HashMap<Character, Integer>();
-		xCoords.put('A', 1);
-		xCoords.put('B', 2);
-		xCoords.put('C', 3);
-		xCoords.put('D', 4);
-		xCoords.put('E', 5);
-		xCoords.put('F', 6);
-		xCoords.put('G', 7);
-		xCoords.put('H', 8);
-		
-		int startX = xCoords.get(from.charAt(0));
-		int startY = Integer.valueOf(from.substring(1, from.length()));
-		int endX = xCoords.get(to.charAt(0));
-		int endY = Integer.valueOf(to.substring(1, to.length()));
-		
-		Location fromLocation = new Location(startX-1, startY-1);
-		Location toLocation = new Location(endX-1, endY-1);
-		
-		return gameBoard.move(currentPlayer.getPlayer(), fromLocation, toLocation);
+	private int convertCharToInt(char y){
+	    int response = 0;
+	    
+	    switch(y){
+	    	case 'A': response = 1;
+	    	break;
+	    	case 'B': response = 2;
+	    	break;
+	    	case 'C': response = 3;
+	    	break;
+	    	case 'D': response = 4;
+	    	break;
+	    	case 'E': response = 5;
+	    	break;
+	    	case 'F': response = 6;
+	    	break;
+	    	case 'G': response = 7;
+	    	break;
+	    	case 'H': response = 8;
+	    	break;
+	    	default:response = Character.getNumericValue(y);
+	    }
+	    
+	    return response;
+	}
+	
+	private Location convertInputToLocation(String input){
+	    int x = convertCharToInt(input.charAt(0));
+	    int y = convertCharToInt(input.charAt(1));
+	    return new Location(x - 1,y - 1);
 	}
 	
 	private boolean isKingAlive(){
@@ -177,7 +201,6 @@ public class Game implements Runnable {
 
 	@Override
 	public void run() {
-	    gameStart();
 	    printBoard();
 	    updateTurn();
 	    while(isKingAlive()){
