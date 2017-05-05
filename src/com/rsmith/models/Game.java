@@ -6,37 +6,25 @@ import com.rsmith.server.Client;
 
 public class Game implements Runnable {
 	
-	private String[][] gameBoard;
-	public Client blackPlayer;
-	public Client whitePlayer;
-	public Client currentPlayer;
+	private Client player1;
+	private Client player2;
+	private Client currentPlayer;
+	private GameBoard gameBoard;
 	
-	public Game(Client blackPlayer, Client whitePlayer){
-	    this.blackPlayer = blackPlayer;
-	    this.whitePlayer = whitePlayer;
-	    this.currentPlayer = whitePlayer;
+	public Game(Client player1, Client player2){
+	    this.player1 = player1;
+	    this.player2 = player2;
+	    this.currentPlayer = player1;
+	    gameBoard = new GameBoard(this);
 	}
 	
-	private void broadcast(String message){
-	    blackPlayer.sendMessage(message);
-	    whitePlayer.sendMessage(message);
+	public void broadcast(String message){
+	    player1.sendMessage(message);
+	    player2.sendMessage(message);
 	}
 	
 	private void gameStart(){	
-		
-		broadcast("Welcome to Chess");
-		String[][] initialBoardState = {
-			{"r", "n", "b", "q", "k", "b", "n", "r"},
-			{"p", "p", "p", "p", "p", "p", "p", "p"},
-			{"-", "-", "-", "-", "-", "-", "-", "-"},
-			{"-", "-", "-", "-", "-", "-", "-", "-"},
-			{"-", "-", "-", "-", "-", "-", "-", "-"},
-			{"-", "-", "-", "-", "-", "-", "-", "-"},
-			{"P", "P", "P", "P", "P", "P", "P", "P"},
-			{"R", "N", "B", "Q", "K", "B", "N", "R"}
-		};
-		
-		gameBoard = initialBoardState;
+	    broadcast("Welcome to Frostburg State University: Chess");
 	}
 	
 	private void printBlankLines(int lines){
@@ -47,68 +35,54 @@ public class Game implements Runnable {
 	}
 	
 	private void printBoard(){		
-		printBlankLines(50);
-		printLogo();
-		printHeader();
-		printRows();
-		printFooter();
+	    printBlankLines(50);
+	    printLogo();
+	    printHeader();
+	    gameBoard.printBoard();
+	    printFooter();
 	}
 	
 	private void printLogo(){
-	    String logo = "Frostburg State University:Chess";
-	    broadcast(logo);
+	    broadcast("----------------------------------");
+	    broadcast(" Frostburg State University:Chess ");
+	    broadcast("----------------------------------");
 	}
 	private void printFooter(){
-	    String footer = "    _______________";
-	    broadcast(footer);
+	    broadcast("----------------------------------");
+	    broadcast("><><><><><><><><><><><><><><><><><");
+	    broadcast("----------------------------------");
 	}
 	
-	private void printHeader(){
-	    String header =    "    A B C D E F G H";
-	    broadcast(header);
-	    String underline = "    _______________";
-	    broadcast(underline);
-	}
-	
-	private void printRows(){
-	    int rowCounter = 1;
-	    for(String[] row : gameBoard){
-		
-		String line = String.valueOf(rowCounter++) + " | ";
-		line += getRowAsString(row);
-		line += " | ";
-		broadcast(line);
-	    }
-	}
-	
-	private String getRowAsString(String[] row){
-	    String line = "";
+	private void printHeader() {
 	    
-	    for(String col : row){
-		line += (col + " ");
-	    }
-	    
-	    return line;
+	    broadcast("----------------------------------");
+	    broadcast("WHITE = UPPERCASE BLACK= LOWERCASE");
+	    broadcast("----------------------------------");
+	    broadcast(" Col:  A  B  C  D  E  F  G  H     ");
+	    broadcast("----------------------------------");
 	}
 	
 	private boolean checkInput(String input){
-		if(input.length() != 2){
-			return false;
-		}
-		String firstChar = input.substring(0, 1);
-		String secondChar = input.substring(1, input.length());
+	    boolean valid = true;
+	    
+	    if(input.length() != 2){
+		valid = false;
+	    }
+	    
+	    String firstChar = input.substring(0, 1);
+	    String secondChar = input.substring(1, input.length());
 		
-		if(!firstChar.matches("^[A-Z]+$") || !secondChar.matches("^[0-9]+$")){
-			return false;
-		}
-		char xCoord = input.charAt(0);
-		int yCoord = Integer.valueOf(input.substring(1, input.length()));
-		if(xCoord < 'A' || xCoord > 'H' || yCoord < 1 || yCoord > 8){
-			return false;
-		}
-		else{
-			return true;
-		}
+	    if(!firstChar.matches("^[A-Z]+$") || !secondChar.matches("^[0-9]+$")){
+		valid = false;
+	    }
+	    
+	    char xCoord = input.charAt(0);
+	    int yCoord = Integer.valueOf(input.substring(1, input.length()));
+	    if(xCoord < 'A' || xCoord > 'H' || yCoord < 1 || yCoord > 8){
+		valid = false;
+	    }
+	    
+	    return valid;
 	}
 	
 	private String getCurrentPlayerInput(){
@@ -150,13 +124,13 @@ public class Game implements Runnable {
 	    return valid;
 	}
 	private void getMove(){
-		currentPlayer.sendMessage("Please input piece location:");
+		currentPlayer.sendMessage("Player: " + currentPlayer.getPlayer().getColor() +" Please input piece location (ex. B2):");
 		String start = getCurrentPlayerInput();
 		
 		String end = "";
 		if(start != " "){
 			if(checkInput(start)){
-				currentPlayer.sendMessage("Move piece to where?");
+				currentPlayer.sendMessage("Player: " + currentPlayer.getPlayer().getColor() + " Move piece to what location (ex. B3)?");
 				end = getCurrentPlayerInput();
 			}
 			else{
@@ -168,10 +142,14 @@ public class Game implements Runnable {
 		    	currentPlayer.sendMessage("There is no piece there.");
 			getMove();
 		}
-		move(start, end);
+		
+		if(!move(start, end)){
+		    currentPlayer.sendMessage("Error processing move. Please ensure you are moving the right color and selected a valid space.");
+		    getMove();
+		}
 	}
 	
-	private void move(String from, String to){
+	private boolean move(String from, String to){
 		HashMap<Character, Integer> xCoords = new HashMap<Character, Integer>();
 		xCoords.put('A', 1);
 		xCoords.put('B', 2);
@@ -184,28 +162,17 @@ public class Game implements Runnable {
 		
 		int startX = xCoords.get(from.charAt(0));
 		int startY = Integer.valueOf(from.substring(1, from.length()));
-		String piece = gameBoard[startY-1][startX-1];
-		gameBoard[startY-1][startX-1] = "-";
-		
 		int endX = xCoords.get(to.charAt(0));
 		int endY = Integer.valueOf(to.substring(1, to.length()));
-		gameBoard[endY-1][endX-1] = piece;
+		
+		Location fromLocation = new Location(startX-1, startY-1);
+		Location toLocation = new Location(endX-1, endY-1);
+		
+		return gameBoard.move(currentPlayer.getPlayer(), fromLocation, toLocation);
 	}
 	
 	private boolean isKingAlive(){
-		boolean blackKing = false;
-		boolean whiteKing = false;
-		for(String[] row: gameBoard){
-			for(String piece: row){
-				if(piece.equals("k")){
-					blackKing = true;
-				}
-				if(piece.equals("K")){
-					whiteKing = true;
-				}
-			}
-		}
-		return blackKing && whiteKing;
+	    return gameBoard.isKingsAlive();
 	}
 
 	@Override
@@ -222,12 +189,12 @@ public class Game implements Runnable {
 	
 	private void updateTurn(){
 	    
-	    if(currentPlayer.equals(blackPlayer)){
-		currentPlayer = whitePlayer;
-		blackPlayer.sendMessage("Waiting on other player to move....");
+	    if(currentPlayer.equals(player1)){
+		currentPlayer = player2;
+		player1.sendMessage("Waiting on other player to move....");
 	    }else{
-		currentPlayer = blackPlayer;
-		whitePlayer.sendMessage("Waiting on other player to move...");
+		currentPlayer = player1;
+		player2.sendMessage("Waiting on other player to move...");
 	    }
 	}
 }

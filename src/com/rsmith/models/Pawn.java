@@ -2,18 +2,16 @@ package com.rsmith.models;
 import java.util.ArrayList;
 
 public class Pawn implements GamePiece{
-	private String color;
+	private PlayerColor color;
 	private String currentPosition;
 	private static ArrayList<String> validMoves;
 	private int moveNumber;
 	
-	public Pawn(String color, String position){
-		moveNumber = 1;
+	public Pawn(PlayerColor color){
 		this.color = color;
-		currentPosition = position;
 	}
-	
-	public String getColor(){
+
+	public PlayerColor getColor(){
 		return color;
 	}
 	
@@ -34,5 +32,21 @@ public class Pawn implements GamePiece{
 		}
 		validMoves.add(String.valueOf(xCoord)+String.valueOf(yCoord+1));
 		return validMoves;
+	}
+
+	@Override
+	public PieceType getType() {
+	    return PieceType.PAWN;
+	}
+
+	@Override
+	public String getChar() {
+	    String symbol = "P";
+	    
+	    if(color == PlayerColor.BLACK){
+		symbol = "p";
+	    }
+	    
+	    return symbol;
 	}
 }

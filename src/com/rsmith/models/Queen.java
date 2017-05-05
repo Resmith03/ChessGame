@@ -1,20 +1,16 @@
 package com.rsmith.models;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Queen implements GamePiece{
-	private String color;
+	private PlayerColor color;
 	private String currentPosition;
 	private static ArrayList<String> validMoves;
-	private int moveNumber;
 	
-	public Queen(String color, String position){
-		moveNumber = 1;
+	public Queen(PlayerColor color){
 		this.color = color;
-		currentPosition = position;
 	}
 	
-	public String getColor(){
+	public PlayerColor getColor(){
 		return color;
 	}
 	
@@ -107,5 +103,21 @@ public class Queen implements GamePiece{
 			validMoves.remove(currentPosition);
 		}
 		return validMoves;
+	}
+
+	@Override
+	public PieceType getType() {
+	    return PieceType.QUEEN;
+	}
+
+	@Override
+	public String getChar() {
+	    String symbol = "Q";
+	    
+	    if(color == PlayerColor.BLACK){
+		symbol = "q";
+	    }
+	    
+	    return symbol;
 	}
 }

@@ -1,7 +1,7 @@
 package com.rsmith.models;
 public class Player{
     public String username;
-    public String color;
+    public PlayerColor color;
 
     public Player() {
 
@@ -11,7 +11,7 @@ public class Player{
 	this.username = username;
     }
 
-    public Player(String username, String color) {
+    public Player(String username, PlayerColor color) {
 	super();
 	this.username = username;
 	this.color = color;
@@ -25,11 +25,11 @@ public class Player{
 	this.username = username;
     }
 
-    public String getColor() {
+    public PlayerColor getColor() {
 	return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(PlayerColor color) {
 	this.color = color;
     }
 	

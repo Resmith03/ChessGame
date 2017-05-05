@@ -1,30 +1,15 @@
 package com.rsmith.models;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class King implements GamePiece{
-	private String color;
-	private String currentPosition;
-	private static ArrayList<String> validMoves;
-	private int moveNumber;
+	private PlayerColor color;
 	
-	public King(String color, String position){
-		moveNumber = 1;
-		this.color = color;
-		currentPosition = position;
-		
+	public King(PlayerColor color){
+	    this.color = color;
 	}
 	
-	public String getColor(){
-		return color;
-	}
-	
-	public ArrayList<String> getValidMoves(){
-		return validMoves;
-	}
-	
-	public String getCurrentPosition(){
-		return currentPosition;
+	public PlayerColor getColor(){
+	    return color;
 	}
 	
 	public ArrayList<String> findValidMoves(String currentPosition, int moveNumber){
@@ -82,5 +67,21 @@ public class King implements GamePiece{
 		}
 		
 		return validMoves;
+	}
+
+	@Override
+	public PieceType getType() {
+	    return PieceType.KING;
+	}
+
+	@Override
+	public String getChar() {
+	    String symbol = "K";
+	    
+	    if(color == PlayerColor.BLACK){
+		symbol = "k";
+	    }
+	    
+	    return symbol;
 	}
 }

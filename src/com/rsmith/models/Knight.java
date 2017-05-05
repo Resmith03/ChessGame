@@ -1,30 +1,17 @@
 package com.rsmith.models;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Knight implements GamePiece{
-	private String color;
-	private String currentPosition;
-	private static ArrayList<String> validMoves;
-	private int moveNumber;
+	private PlayerColor color;
 	
-	public Knight(String color, String position){
-		moveNumber = 1;
-		this.color = color;
-		currentPosition = position;
+	public Knight(PlayerColor color) {
+	    this.color = color;
 	}
-	
-	public String getColor(){
+
+	public PlayerColor getColor(){
 		return color;
 	}
 	
-	public ArrayList<String> getValidMoves(){
-		return validMoves;
-	}
-	
-	public String getCurrentPosition(){
-		return currentPosition;
-	}
 	
 	public ArrayList<String> findValidMoves(String currentPosition, int moveNumber){
 		char xCoord = currentPosition.charAt(0);
@@ -57,5 +44,21 @@ public class Knight implements GamePiece{
 		}
 
 		return validMoves;
+	}
+
+	@Override
+	public PieceType getType() {
+	    return PieceType.KNIGHT;
+	}
+
+	@Override
+	public String getChar() {
+	    String symbol = "N";
+	    
+	    if(color == PlayerColor.BLACK){
+		symbol = "n";
+	    }
+	    
+	    return symbol;
 	}
 }

@@ -1,30 +1,18 @@
 package com.rsmith.models;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Bishop implements GamePiece{
-	private String color;
-	private String currentPosition;
+	private PlayerColor color;
 	private static ArrayList<String> validMoves;
-	private int moveNumber;
 	
-	public Bishop(String color, String position){
-		moveNumber = 1;
+	public Bishop(PlayerColor color){
 		this.color = color;
-		currentPosition = position;
-	}
-	
-	public String getColor(){
-		return color;
 	}
 	
 	public ArrayList<String> getValidMoves(){
 		return validMoves;
 	}
 	
-	public String getCurrentPosition(){
-		return currentPosition;
-	}
 	
 	public ArrayList<String> findValidMoves(String currentPosition, int moveNumber){
 		char xCoord = currentPosition.charAt(0);
@@ -76,5 +64,26 @@ public class Bishop implements GamePiece{
 		}
 
 		return validMoves;
+	}
+
+	@Override
+	public PieceType getType() {
+	    return PieceType.BISHOP;
+	}
+
+	@Override
+	public PlayerColor getColor() {
+	    return color;
+	}
+
+	@Override
+	public String getChar() {
+	    String symbol = "B";
+	    
+	    if(color == PlayerColor.BLACK){
+		symbol = "b";
+	    }
+	    
+	    return symbol;
 	}
 }

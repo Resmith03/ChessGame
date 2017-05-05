@@ -1,30 +1,19 @@
 package com.rsmith.models;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Rook implements GamePiece{
-	private String color;
-	private String currentPosition;
-	private static ArrayList<String> validMoves;
-	private int moveNumber;
+	private PlayerColor color;
+
 	
-	public Rook(String color, String position){
-		moveNumber = 1;
+	public Rook(PlayerColor color){
 		this.color = color;
-		currentPosition = position;
 	}
 	
-	public String getColor(){
+	public PlayerColor getColor(){
 		return color;
 	}
 	
-	public ArrayList<String> getValidMoves(){
-		return validMoves;
-	}
 	
-	public String getCurrentPosition(){
-		return currentPosition;
-	}
 	
 	public ArrayList<String> findValidMoves(String currentPosition, int moveNumber){
 		char xCoord = currentPosition.charAt(0);
@@ -63,5 +52,21 @@ public class Rook implements GamePiece{
 			validMoves.remove(currentPosition);
 		}
 		return validMoves;
+	}
+
+	@Override
+	public PieceType getType() {
+	    return PieceType.ROOK;
+	}
+
+	@Override
+	public String getChar() {
+	    String symbol = "R";
+	    
+	    if(color == PlayerColor.BLACK){
+		symbol = "r";
+	    }
+	    
+	    return symbol;
 	}
 }
