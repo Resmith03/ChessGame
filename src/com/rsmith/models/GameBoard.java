@@ -22,20 +22,13 @@ public class GameBoard {
 	for (int x = 0; x < BOARD_WIDTH; x++) {
 	    for (int y = 0; y < BOARD_HEIGHT; y++) {
 
-		// create new space on board
 		BoardSpace space = new BoardSpace(x, y);
-
-		// get default game piece for that space (x,y)
 		GamePiece piece = getDefaultGamePiece(x, y);
 
-		// if piece was created for current space
 		if (piece != null) {
-
-		    // add piece to board space
 		    space.setGamePiece(piece);
 		}
 
-		// add space to board
 		boardSpaceList.add(space);
 	    }
 	}
@@ -68,7 +61,8 @@ public class GameBoard {
      * b/B = Bishop 
      * q/Q = Queen 
      *
-     * Lower-case = White Upper-case = Black
+     * Lower-case = White 
+     * Upper-case = Black
      * 
      */
     private GamePiece getDefaultGamePiece(int x, int y) {
