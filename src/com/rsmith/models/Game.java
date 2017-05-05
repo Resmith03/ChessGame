@@ -14,6 +14,7 @@ public class Game implements Runnable {
 	public Game(Client blackPlayer, Client whitePlayer){
 	    this.blackPlayer = blackPlayer;
 	    this.whitePlayer = whitePlayer;
+	    this.currentPlayer = whitePlayer;
 	}
 	
 	private void broadcast(String message){
@@ -38,23 +39,56 @@ public class Game implements Runnable {
 		gameBoard = initialBoardState;
 	}
 	
+	private void printBlankLines(int lines){
+	    String space = "          ";
+	    for(int i = 0; i < lines; i++){
+		broadcast(space);
+	    }
+	}
+	
 	private void printBoard(){		
-		int rowCounter = 1;
-		String space = "----------";
-		broadcast(space);
-		broadcast(space);
-		broadcast(space);
-		broadcast(space);
-		for(String[] row : gameBoard){
-			
-			String line = String.valueOf(rowCounter++) + "...";
-			
-			for(String col : row){
-				line += (col + " ");
-			}
-			
-			broadcast(line);
-		}
+		printBlankLines(50);
+		printLogo();
+		printHeader();
+		printRows();
+		printFooter();
+	}
+	
+	private void printLogo(){
+	    String logo = "Frostburg State University:Chess";
+	    broadcast(logo);
+	}
+	private void printFooter(){
+	    String footer = "    _______________";
+	    broadcast(footer);
+	}
+	
+	private void printHeader(){
+	    String header =    "    A B C D E F G H";
+	    broadcast(header);
+	    String underline = "    _______________";
+	    broadcast(underline);
+	}
+	
+	private void printRows(){
+	    int rowCounter = 1;
+	    for(String[] row : gameBoard){
+		
+		String line = String.valueOf(rowCounter++) + " | ";
+		line += getRowAsString(row);
+		line += " | ";
+		broadcast(line);
+	    }
+	}
+	
+	private String getRowAsString(String[] row){
+	    String line = "";
+	    
+	    for(String col : row){
+		line += (col + " ");
+	    }
+	    
+	    return line;
 	}
 	
 	private boolean checkInput(String input){
@@ -105,9 +139,12 @@ public class Game implements Runnable {
 	private boolean inputIsValid(List<String> inputs){
 	    boolean valid = false;
 	    
-	    //need to add check for format
 	    if(inputs != null && inputs.size() > 0){
-		valid = true;
+		valid = checkInput(inputs.get(0));
+		if(valid == false){
+		    currentPlayer.sendMessage("Invlid input format!");
+		    currentPlayer.clearInputMessages();
+		}
 	    }
 	    
 	    return valid;
@@ -148,7 +185,7 @@ public class Game implements Runnable {
 		int startX = xCoords.get(from.charAt(0));
 		int startY = Integer.valueOf(from.substring(1, from.length()));
 		String piece = gameBoard[startY-1][startX-1];
-		gameBoard[startY-1][startX-1] = " ";
+		gameBoard[startY-1][startX-1] = "-";
 		
 		int endX = xCoords.get(to.charAt(0));
 		int endY = Integer.valueOf(to.substring(1, to.length()));
@@ -175,7 +212,7 @@ public class Game implements Runnable {
 	public void run() {
 	    gameStart();
 	    printBoard();
-	    currentPlayer = whitePlayer;
+	    updateTurn();
 	    while(isKingAlive()){
 		getMove();
 		printBoard();
@@ -184,10 +221,13 @@ public class Game implements Runnable {
 	}
 	
 	private void updateTurn(){
+	    
 	    if(currentPlayer.equals(blackPlayer)){
 		currentPlayer = whitePlayer;
+		blackPlayer.sendMessage("Waiting on other player to move....");
 	    }else{
 		currentPlayer = blackPlayer;
+		whitePlayer.sendMessage("Waiting on other player to move...");
 	    }
 	}
 }
