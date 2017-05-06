@@ -1,0 +1,13 @@
+/Bishop.class
+/BoardSpace.class
+/ClientMessage.class
+/Game.class
+/GameBoard.class
+/GamePiece.class
+/King.class
+/Knight.class
+/Location.class
+/Pawn.class
+/PieceType.class
+/Player.class
+/PlayerColor.class
