@@ -38,7 +38,7 @@ public class Game implements Runnable {
 	}
 	
 	private void printBoard(){		
-	    printBlankLines(50);
+	    printBlankLines(1);
 	    printLogo();
 	    printHeader();
 	    gameBoard.printBoard();
@@ -210,6 +210,15 @@ public class Game implements Runnable {
 		printBoard();
 		updateTurn();
 	    }
+	    
+	    player1.sendMessage("<><><><><><><><><><>");
+	    player1.sendMessage("     GAME OVER!!!   ");
+	    player1.sendMessage("<><><><><><><><><><>");
+	    
+	    player2.sendMessage("<><><><><><><><><><>");
+	    player2.sendMessage("     GAME OVER!!!   ");
+	    player2.sendMessage("<><><><><><><><><><>");
+	    
 	}
 	
 	private void updateTurn(){

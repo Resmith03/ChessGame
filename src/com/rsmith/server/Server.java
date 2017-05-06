@@ -63,6 +63,8 @@ public class Server implements Runnable {
 		}
 	    }
 	}
+	
+	client.sendMessage("Enter a player id to challenge them to a game:");
     }
     
     @Override
