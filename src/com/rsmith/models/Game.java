@@ -17,6 +17,8 @@ public class Game implements Runnable {
 	private static final String INPUT_ERROR_MESSAGE = "Error processing move. Please ensure you are moving the right color and selected a valid space.";
 	
 	public Game(Client player1, Client player2){
+	    player1.getPlayer().setColor(PlayerColor.BLACK);
+	    player2.getPlayer().setColor(PlayerColor.WHITE);
 	    this.player1 = player1;
 	    this.player2 = player2;
 	    this.currentPlayer = player1;

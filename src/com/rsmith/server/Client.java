@@ -73,7 +73,17 @@ public class Client implements Runnable {
     public void addInputMessage(String message) {
 	inputList.add(message);
     }
-
+    
+    public String getInputMessage(){
+	String message = "";
+	
+	if(inputList != null && inputList.size() > 0){
+	    message = inputList.get(0);
+	    inputList.remove(0);
+	}
+	
+	return message;
+    }
     public void clearInputMessages() {
 	inputList.clear();
 	

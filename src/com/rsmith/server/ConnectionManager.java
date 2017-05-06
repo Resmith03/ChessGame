@@ -33,9 +33,15 @@ public class ConnectionManager implements Runnable {
 			System.out.println("Reading message from " + client.getPlayer().getUsername() + ": " + message);
 			client.addInputMessage(message);
 		    }
+		    
+		    Thread.sleep(100);
+		    
 		} catch (IOException e) {
 		    e.printStackTrace();
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
 		}
+		
 	    }
 	}
     }
@@ -55,7 +61,7 @@ public class ConnectionManager implements Runnable {
 		
 		
 		try {
-		    Thread.sleep(100);
+		    Thread.sleep(500);
 		} catch (InterruptedException e) {
 		    e.printStackTrace();
 		}

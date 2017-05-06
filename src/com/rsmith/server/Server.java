@@ -6,9 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rsmith.models.Game;
 import com.rsmith.models.Player;
-import com.rsmith.models.PlayerColor;
 
 public class Server implements Runnable {
     private static final int PORT = 1321;
@@ -18,9 +16,16 @@ public class Server implements Runnable {
     public Server() throws IOException {
 	listener = new ServerSocket(PORT);
 	clientList = new ArrayList<Client>();
-	
+	new Thread(new GameChallengeListener(this)).start();
     }
     
+    public List<Client> getClientList(){
+	return new ArrayList<Client>(clientList);
+    }
+    
+    public void removeClient(Client client){
+	clientList.remove(client);
+    }
     
     public void broadcast(String message){
 	for(Client client:clientList){
@@ -36,8 +41,33 @@ public class Server implements Runnable {
 	}
     }
     
+    public void showLobby(Client client){
+	
+	for(int i = 0; i < 50; i++){
+	    broadcast("                 ");
+	}
+	
+	broadcast("---------------------------------------------------");
+	broadcast("     Frostburg State University: Chess Lobby       ");
+	broadcast("---------------------------------------------------");
+	broadcast("                                                   ");
+	broadcast("  Select a player to challenge to a game of chess  ");
+	broadcast("---------------------------------------------------");
+	broadcast(" <<<<<< Enter (X) to refresh client list >>>>>>>>> ");
+	broadcast("---------------------------------------------------");
+		
+	if(clientList != null){
+	    for(Client displayClient: clientList){
+		if(!displayClient.equals(client)){
+		    client.sendMessage("Player Id: " + displayClient.getPlayer().getId());
+		}
+	    }
+	}
+    }
+    
     @Override
     public void run() {
+	
 	while (true) {
 	    try {
 		System.out.println("Listening for client connection...");
@@ -47,22 +77,7 @@ public class Server implements Runnable {
 		Client client = new Client(player, socket);
 		clientList.add(client);
 		new Thread(client).start();
-		
-		if(clientList.size() > 1){
-		    
-		    Client player1 = clientList.get(0);
-		    Client player2 = clientList.get(1);
-		    
-		    player1.getPlayer().setColor(PlayerColor.BLACK);
-		    player2.getPlayer().setColor(PlayerColor.WHITE);
-		    
-		    clientList.remove(player1);
-		    clientList.remove(player2);
-		    
-		    new Thread(new Game(player1,player2)).start();
-		}
-		
-		printAvailablePlayers();
+		showLobby(client);
 		Thread.sleep(100);
 	    } catch (IOException e) {
 		e.printStackTrace();
@@ -70,19 +85,5 @@ public class Server implements Runnable {
 		e.printStackTrace();
 	    }
 	}
-    }
-    
-    private void printAvailablePlayers(){
-	broadcast("     Frostburg State University: Chess Lobby       ");
-	broadcast("___________________________________________________");
-	broadcast("                                                   ");
-	broadcast("  Select a player to challenge to a game of chess  ");
-	broadcast("___________________________________________________");
-	
-	int counter = 1;
-	for(Client client: clientList){
-	    broadcast(String.valueOf(counter) + " : " + client.getPlayer().username);
-	}
-    }
-    
+    }    
 }

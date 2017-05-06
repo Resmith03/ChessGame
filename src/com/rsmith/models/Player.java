@@ -1,19 +1,23 @@
 package com.rsmith.models;
 public class Player{
-    public String username;
-    public PlayerColor color;
-
+    private String username;
+    private PlayerColor color;
+    private Integer id;
+    private static volatile Integer playerCounter = 0; 
+    
     public Player() {
-
+	playerCounter++;
+	id = playerCounter;
     }
 
     public Player(String username) {
+	this();
 	this.username = username;
+	
     }
 
     public Player(String username, PlayerColor color) {
-	super();
-	this.username = username;
+	this(username);
 	this.color = color;
     }
 
@@ -32,5 +36,12 @@ public class Player{
     public void setColor(PlayerColor color) {
 	this.color = color;
     }
-	
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 }
