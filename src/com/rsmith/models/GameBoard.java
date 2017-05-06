@@ -88,15 +88,15 @@ public class GameBoard {
 	    }
 	    
 	    if (y == 1) {
-		piece = new Bishop(PlayerColor.WHITE);
+		piece = new Pawn(PlayerColor.WHITE);
 	    } else if (y == 6) {
-		piece = new Bishop(PlayerColor.BLACK);
+		piece = new Pawn(PlayerColor.BLACK);
 	    }
 	}else if(x == 2 || x == 5){
 	    if (y == 0) {
-		piece = new Pawn(PlayerColor.WHITE);
+		piece = new Bishop(PlayerColor.WHITE);
 	    } else if (y == 7) {
-		piece = new Pawn(PlayerColor.BLACK);
+		piece = new Bishop(PlayerColor.BLACK);
 	    }
 	    
 	    if (y == 1) {
