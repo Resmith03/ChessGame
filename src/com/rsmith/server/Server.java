@@ -44,17 +44,17 @@ public class Server implements Runnable {
     public void showLobby(Client client){
 	
 	for(int i = 0; i < 50; i++){
-	    broadcast("                 ");
+	    client.sendMessage("                 ");
 	}
 	
-	broadcast("---------------------------------------------------");
-	broadcast("     Frostburg State University: Chess Lobby       ");
-	broadcast("---------------------------------------------------");
-	broadcast("                                                   ");
-	broadcast("  Select a player to challenge to a game of chess  ");
-	broadcast("---------------------------------------------------");
-	broadcast(" <<<<<< Enter (X) to refresh client list >>>>>>>>> ");
-	broadcast("---------------------------------------------------");
+	client.sendMessage("---------------------------------------------------");
+	client.sendMessage("     Frostburg State University: Chess Lobby       ");
+	client.sendMessage("---------------------------------------------------");
+	client.sendMessage("                                                   ");
+	client.sendMessage("  Select a player to challenge to a game of chess  ");
+	client.sendMessage("---------------------------------------------------");
+	client.sendMessage(" <<<<<< Enter (X) to refresh client list >>>>>>>>> ");
+	client.sendMessage("---------------------------------------------------");
 		
 	if(clientList != null){
 	    for(Client displayClient: clientList){
