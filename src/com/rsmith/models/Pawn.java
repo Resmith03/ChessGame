@@ -31,17 +31,6 @@ public class Pawn implements GamePiece{
 	public void setIsFirstMove(boolean isFirstMove){
 		this.isFirstMove = isFirstMove;
 	}
-	
-	public ArrayList<String> findValidMoves(String currentPosition, int moveNumber){
-		char xCoord = currentPosition.charAt(0);
-		int yCoord = Integer.valueOf(currentPosition.substring(1));
-		ArrayList<String> validMoves = new ArrayList<String>();
-		if (moveNumber == 1){
-			validMoves.add(String.valueOf(xCoord)+String.valueOf(yCoord+2));
-		}
-		validMoves.add(String.valueOf(xCoord)+String.valueOf(yCoord+1));
-		return validMoves;
-	}
 
 	@Override
 	public PieceType getType() {

@@ -1,0 +1,136 @@
+package com.rsmith.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.rsmith.models.Location;
+import com.rsmith.models.Pawn;
+
+public class ValidMoveService {
+	private static List<Location> validLocations;
+	private static int[] coordinates;
+
+	public static List<Location> getPawnMoves(Pawn pawn, Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	public static List<Location> getRookMoves(Location start){
+		validLocations = new ArrayList<Location>();
+		coordinates = start.toArray();
+		moveUnlimitedRight(coordinates);
+		moveUnlimitedUp(coordinates);
+		moveUnlimitedLeft(coordinates);
+		moveUnlimitedDown(coordinates);
+		return validLocations;
+	}
+	
+	//Ain't it funny how the night moves. Bob Seger. Legend...
+	public static List<Location> getKnightMoves(Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	public static List<Location> getBishopMoves(Location start){
+		validLocations = new ArrayList<Location>();
+		coordinates = start.toArray();
+		moveUnlimitedUpRight(coordinates);
+		moveUnlimitedUpLeft(coordinates);
+		moveUnlimitedDownRight(coordinates);
+		moveUnlimitedDownLeft(coordinates);
+		return validLocations;
+	}
+	
+	public static List<Location> getKingMoves(Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	public static List<Location> getQueenMoves(Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	private static void moveUnlimitedRight(int[] start){
+		int x = start[0];
+		int y = start[1];
+		for(int i = 1; (x+i) < 8; i++){
+			validLocations.add(new Location(x+i, y));
+		}
+	}
+	
+	private static void moveUnlimitedLeft(int[] start){
+		int x = start[0];
+		int y = start[1];
+		for(int i = 1; (x-i) >= 0; i++){
+			validLocations.add(new Location(x-i, y));
+		}
+	}
+	
+	private static void moveUnlimitedUp(int[] start){
+		int x = start[0];
+		int y = start[1];
+		for(int i = 1; (y-i) >= 0; i++){
+			validLocations.add(new Location(x, y-i));
+		}
+	}
+	
+	private static void moveUnlimitedDown(int[] start){
+		int x = start[0];
+		int y = start[1];
+		for(int i = 1; (y+i) < 8; i++){
+			validLocations.add(new Location(x, y+i));
+		}
+	}
+	
+	private static void moveUnlimitedUpRight(int[] start){
+		int x = start[0];
+		int y = start[1];
+		while(x < 7 && y > 0){
+			x++;
+			y--;
+			validLocations.add(new Location(x, y));
+		}
+	}
+
+	private static void moveUnlimitedUpLeft(int[] start){
+		int x = start[0];
+		int y = start[1];
+		while(x > 0 && y > 0){
+			x--;
+			y--;
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	private static void moveUnlimitedDownRight(int[] start){
+		int x = start[0];
+		int y = start[1];
+		while(x < 7 && y < 7){
+			x++;
+			y++;
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	private static void moveUnlimitedDownLeft(int[] start){
+		int x = start[0];
+		int y = start[1];
+		while(x > 0 && y < 7){
+			x--;
+			y++;
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	//TODO Test
+	public static void main(String args[]){
+		Location test = new Location(0, 7);
+		getBishopMoves(test);
+		for(Location l : validLocations){
+			System.out.println("("+l.getX()+","+l.getY()+")");
+		}
+
+	}
+
+}

@@ -1,7 +1,9 @@
 package com.rsmith.models;
 import java.util.List;
 
+import com.rsmith.exceptions.InvalidMoveException;
 import com.rsmith.server.Client;
+import com.rsmith.service.RuleService;
 
 /**
  * 
@@ -14,6 +16,7 @@ public class Game implements Runnable {
 	private Client player2;
 	private Client currentPlayer;
 	private GameBoard gameBoard;
+	private RuleService service;
 	private static final String INPUT_ERROR_MESSAGE = "Error processing move. Please ensure you are moving the right color and selected a valid space.";
 	
 	public Game(Client player1, Client player2){
@@ -23,6 +26,7 @@ public class Game implements Runnable {
 	    this.player2 = player2;
 	    this.currentPlayer = player1;
 	    gameBoard = new GameBoard(this);
+	    service = new RuleService(gameBoard);
 	}
 	
 	public void broadcast(String message){
@@ -155,10 +159,13 @@ public class Game implements Runnable {
 	    return convertInputToLocation(input);
 	}
 	
-	private void getMove(){
+	private void getMove() throws InvalidMoveException{
 		Location start = askForLocation("Please input piece location (ex. B2):");
 		Location end = askForLocation("Move piece to what location (ex. B3)?");
 		
+		if(!service.validMove(start, end)){
+				getMove();
+			}
 		if(!gameBoard.move(currentPlayer.getPlayer(), start, end)){
 		    currentPlayer.sendMessage(INPUT_ERROR_MESSAGE);
 		    getMove();
@@ -206,9 +213,13 @@ public class Game implements Runnable {
 	    printBoard();
 	    updateTurn();
 	    while(isKingAlive()){
-		getMove();
-		printBoard();
-		updateTurn();
+		try {
+			getMove();
+			printBoard();
+			updateTurn();
+		} catch (InvalidMoveException e) {
+			currentPlayer.sendMessage(e.getMessage());
+		}
 	    }
 	    
 	    player1.sendMessage("<><><><><><><><><><>");

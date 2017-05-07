@@ -6,7 +6,7 @@ public enum PieceType {
     KNIGHT("KNIGHT"), 
     BISHOP("BISHOP"),
     PAWN("PAWN"),
-    ROOK("ROCK");
+    ROOK("ROOK");
     
     private final String name;
     private PieceType(String name){
