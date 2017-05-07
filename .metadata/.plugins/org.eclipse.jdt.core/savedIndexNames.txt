@@ -1,3 +1,2 @@
 INDEX VERSION 1.129+C:\Users\IBM_ADMIN\ChessWorkspace\.metadata\.plugins\org.eclipse.jdt.core
-1067094681.index
 1392960894.index

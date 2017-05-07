@@ -33,7 +33,26 @@ public class GameBoard {
 	    }
 	}
     }
+    
+    public static List<BoardSpace> getDefaultBoard(){
+	List<BoardSpace> spaces = new ArrayList<BoardSpace>();
+	
+	for (int x = 0; x < BOARD_WIDTH; x++) {
+	    for (int y = 0; y < BOARD_HEIGHT; y++) {
 
+		BoardSpace space = new BoardSpace(x, y);
+		GamePiece piece = getDefaultGamePiece(x, y);
+
+		if (piece != null) {
+		    space.setGamePiece(piece);
+		}
+
+		spaces.add(space);
+	    }
+	}
+	
+	return spaces;
+    }
     /*
      * ======================================== 
      * 		DEFAULT BOARD LAYOUT
@@ -65,7 +84,7 @@ public class GameBoard {
      * Upper-case = Black
      * 
      */
-    private GamePiece getDefaultGamePiece(int x, int y) {
+    private static GamePiece getDefaultGamePiece(int x, int y) {
 	GamePiece piece = null;
 
 	if (x == 0 || x == 7) {

@@ -1,8 +1,12 @@
 package com.rsmith.models;
 
+<<<<<<< HEAD
 import com.rsmith.exceptions.InvalidMoveException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rsmith.server.Client;
 import com.rsmith.service.RuleService;
+=======
+import com.fasterxml.jackson.databind.ObjectMapper;
+>>>>>>> 3dfee4760b201ae7ab2fc9d149a802b8ea1b0921
 
 /**
  * 
@@ -15,9 +19,12 @@ public class Game implements Runnable {
 	private Player player2;
 	private Player currentPlayer;
 	private GameBoard gameBoard;
+<<<<<<< HEAD
 	private RuleService service;
+=======
 	private ObjectMapper mapper;
 	
+>>>>>>> 3dfee4760b201ae7ab2fc9d149a802b8ea1b0921
 	private static final String INPUT_ERROR_MESSAGE = "Error processing move. Please ensure you are moving the right color and selected a valid space.";
 	
 	public Game(Player player1, Player player2){
@@ -137,11 +144,16 @@ public class Game implements Runnable {
 		Location start = askForLocation("Please input piece location (ex. B2):");
 		Location end = askForLocation("Move piece to what location (ex. B3)?");
 		
+<<<<<<< HEAD
 		if(!service.validMove(start, end)){
 				getMove();
 			}
+		if(!gameBoard.move(currentPlayer.getPlayer(), start, end)){
+		    currentPlayer.sendMessage(INPUT_ERROR_MESSAGE);
+=======
 		if(!gameBoard.move(currentPlayer, start, end)){
 		    currentPlayer.sendRequest(new Request(ContentType.STRING, MessageType.INFO, ResponseType.NONE, INPUT_ERROR_MESSAGE));
+>>>>>>> 3dfee4760b201ae7ab2fc9d149a802b8ea1b0921
 		    getMove();
 		}
 	}

@@ -6,7 +6,3 @@
 /GameChallengeListener.class
 /Server.class
 /SocketManager$ConnectionHandler.class
-/SocketManager$RequestHandler.class
-/SocketManager$SocketReader.class
-/SocketManager$SocketWriter.class
-/SocketManager.class
