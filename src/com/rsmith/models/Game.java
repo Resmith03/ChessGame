@@ -1,7 +1,6 @@
 package com.rsmith.models;
-import java.util.List;
 
-import com.rsmith.server.Client;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 
@@ -10,15 +9,18 @@ import com.rsmith.server.Client;
  */
 public class Game implements Runnable {
 	
-	private Client player1;
-	private Client player2;
-	private Client currentPlayer;
+	private Player player1;
+	private Player player2;
+	private Player currentPlayer;
 	private GameBoard gameBoard;
+	private ObjectMapper mapper;
+	
 	private static final String INPUT_ERROR_MESSAGE = "Error processing move. Please ensure you are moving the right color and selected a valid space.";
 	
-	public Game(Client player1, Client player2){
-	    player1.getPlayer().setColor(PlayerColor.BLACK);
-	    player2.getPlayer().setColor(PlayerColor.WHITE);
+	public Game(Player player1, Player player2){
+	    mapper = new ObjectMapper();
+	    player1.setColor(PlayerColor.BLACK);
+	    player2.setColor(PlayerColor.WHITE);
 	    this.player1 = player1;
 	    this.player2 = player2;
 	    this.currentPlayer = player1;
@@ -26,8 +28,8 @@ public class Game implements Runnable {
 	}
 	
 	public void broadcast(String message){
-	    player1.sendMessage(message);
-	    player2.sendMessage(message);
+	    player1.sendRequest(new Request(ContentType.STRING,MessageType.POST, ResponseType.NONE,message));
+	    player2.sendRequest(new Request(ContentType.STRING,MessageType.POST, ResponseType.NONE,message));
 	}
 	
 	private void printBlankLines(int lines){
@@ -114,53 +116,25 @@ public class Game implements Runnable {
 	    return valid;
 	}
 	
-	private String getCurrentPlayerInput(){
-	    String response = "";
-	    
-	    boolean inputValid = false;
-	    
-	    while(inputValid == false){
-		List<String> inputList = currentPlayer.getMessages();
-		if(inputList != null && inputList.size() > 0){
-		    String input = inputList.get(0);
-		    
-		    if(checkInput(input)){
-			inputValid=true;
-			response = input;
-		    }else{
-			currentPlayer.clearInputMessages();
-			currentPlayer.sendMessage("Invlid input format!");
-			sleep(1000);
-		    }
-		}else{
-		    sleep(1000);
-		}
-	    }
-	    
-	    return response;
-	}
-	
-	private void sleep(int millis){
-	    try {
-		Thread.sleep(millis);
-	    } catch (InterruptedException e) {
-		e.printStackTrace();
-	    }
-	}	
-	
 	private Location askForLocation(String question){
-	    currentPlayer.clearInputMessages();
-	    currentPlayer.sendMessage("Player: " + currentPlayer.getPlayer().getColor() + " " + question);
-	    String input = getCurrentPlayerInput();	    
-	    return convertInputToLocation(input);
+	    Location location = null;
+	    
+	    try{
+		Response response = currentPlayer.sendRequest(new Request(ContentType.STRING, MessageType.GET, ResponseType.LOCATION,"PLAYER " + currentPlayer.getColor() + " " + question));
+		location = mapper.readValue(response.getPayload(), Location.class);
+	    }catch(Exception ex){
+		ex.printStackTrace();
+	    }
+	    
+	    return location;
 	}
 	
 	private void getMove(){
 		Location start = askForLocation("Please input piece location (ex. B2):");
 		Location end = askForLocation("Move piece to what location (ex. B3)?");
 		
-		if(!gameBoard.move(currentPlayer.getPlayer(), start, end)){
-		    currentPlayer.sendMessage(INPUT_ERROR_MESSAGE);
+		if(!gameBoard.move(currentPlayer, start, end)){
+		    currentPlayer.sendRequest(new Request(ContentType.STRING, MessageType.INFO, ResponseType.NONE, INPUT_ERROR_MESSAGE));
 		    getMove();
 		}
 	}
@@ -191,12 +165,6 @@ public class Game implements Runnable {
 	    return response;
 	}
 	
-	private Location convertInputToLocation(String input){
-	    int x = convertCharToInt(input.charAt(0));
-	    int y = convertCharToInt(input.charAt(1));
-	    return new Location(x - 1,y - 1);
-	}
-	
 	private boolean isKingAlive(){
 	    return gameBoard.isKingsAlive();
 	}
@@ -210,14 +178,7 @@ public class Game implements Runnable {
 		printBoard();
 		updateTurn();
 	    }
-	    
-	    player1.sendMessage("<><><><><><><><><><>");
-	    player1.sendMessage("     GAME OVER!!!   ");
-	    player1.sendMessage("<><><><><><><><><><>");
-	    
-	    player2.sendMessage("<><><><><><><><><><>");
-	    player2.sendMessage("     GAME OVER!!!   ");
-	    player2.sendMessage("<><><><><><><><><><>");
+	    //TODO: send GAME OVER message
 	    
 	}
 	
@@ -225,10 +186,10 @@ public class Game implements Runnable {
 	    
 	    if(currentPlayer.equals(player1)){
 		currentPlayer = player2;
-		player1.sendMessage("Waiting on other player to move....");
+		player1.sendRequest(new Request(ContentType.STRING, MessageType.INFO, ResponseType.NONE, "Waiting on other player to move...."));
 	    }else{
 		currentPlayer = player1;
-		player2.sendMessage("Waiting on other player to move...");
+		player2.sendRequest(new Request(ContentType.STRING, MessageType.INFO, ResponseType.NONE, "Waiting on other player to move...."));
 	    }
 	}
 }
