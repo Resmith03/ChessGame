@@ -1,0 +1,117 @@
+package com.rsmith.service;
+
+import java.util.List;
+
+import com.rsmith.models.GameBoard;
+import com.rsmith.models.GamePiece;
+import com.rsmith.models.Location;
+import com.rsmith.models.Pawn;
+
+public class ValidMoveService {
+	private static List<Location> validLocations;
+	private static int[] coordinates;
+
+	public static List<Location> getPawnMoves(Pawn pawn, Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	public static List<Location> getRookMoves(Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	//Ain't it funny how the night moves. Bob Seger. Legend...
+	public static List<Location> getKnightMoves(Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	public static List<Location> getBishopMoves(Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	public static List<Location> getKingMoves(Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	public static List<Location> getQueenMoves(Location start){
+		coordinates = start.toArray();
+		return validLocations;
+	}
+	
+	private void moveUnlimitedRight(int[] start){
+		int x = start[0];
+		int y = start[1];
+		for(int i = 1; (x+i) < 8; i++){
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	private void moveUnlimitedLeft(int[] start){
+		int x = start[0];
+		int y = start[1];
+		for(int i = 1; (x-i) >= 0; i--){
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	private void moveUnlimitedUp(int[] start){
+		int x = start[0];
+		int y = start[1];
+		for(int i = 1; (y-i) >= 8; i--){
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	private void moveUnlimitedDown(int[] start){
+		int x = start[0];
+		int y = start[1];
+		for(int i = 1; (y+i) < 8; i++){
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	private void moveUnlimitedUpRight(int[] start){
+		int x = start[0];
+		int y = start[1];
+		while(x < 8){
+			x++;
+			y--;
+			validLocations.add(new Location(x, y));
+		}
+	}
+
+	private void moveUnlimitedUpLeft(int[] start){
+		int x = start[0];
+		int y = start[1];
+		while(x >= 0){
+			x--;
+			y--;
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	private void moveUnlimitedDownRight(int[] start){
+		int x = start[0];
+		int y = start[1];
+		while(x < 8){
+			x++;
+			y++;
+			validLocations.add(new Location(x, y));
+		}
+	}
+	
+	private void moveUnlimitedDownLeft(int[] start){
+		int x = start[0];
+		int y = start[1];
+		while(x >= 0){
+			x--;
+			y++;
+			validLocations.add(new Location(x, y));
+		}
+	}
+
+}

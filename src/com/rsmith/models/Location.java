@@ -16,4 +16,9 @@ public class Location {
     public int getY() {
         return y;
     }
+    
+    public int[] toArray(){
+    	int[] array = {this.x, this.y};
+    	return array;
+    }
 }

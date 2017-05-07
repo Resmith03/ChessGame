@@ -1,10 +1,15 @@
 package com.rsmith.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.rsmith.exceptions.InvalidMoveException;
 import com.rsmith.models.BoardSpace;
 import com.rsmith.models.GameBoard;
 import com.rsmith.models.GamePiece;
 import com.rsmith.models.Location;
+import com.rsmith.models.Pawn;
+import com.rsmith.models.PlayerColor;
 
 public class RuleService {
     private GameBoard board;
@@ -44,8 +49,8 @@ public class RuleService {
     
     public boolean checkPath(Location start, Location end){
     	boolean blocked = false;
-    	int[] startCoords = {start.getX(), start.getY()};
-    	int[] endCoords = {end.getX(), end.getY()};
+    	int[] startCoords = start.toArray();
+    	int[] endCoords = end.toArray();
     	
     	if(startCoords[0] < endCoords[0] && startCoords[1] == endCoords[1]){
     		blocked = checkMoveRight(startCoords, endCoords);
@@ -174,5 +179,4 @@ public class RuleService {
     	}
     	return blocked;
     }
-    
 }
