@@ -1,6 +1,8 @@
 package com.rsmith.models;
 import java.util.ArrayList;
 
+import com.rsmith.DTO.GamePieceDTO;
+
 public class Bishop implements GamePiece{
 	private PlayerColor color;
 	private static ArrayList<String> validMoves;
@@ -32,5 +34,15 @@ public class Bishop implements GamePiece{
 	    }
 	    
 	    return symbol;
+	}
+	
+	@Override
+	public GamePieceDTO toDTO() {
+	    GamePieceDTO dto = new GamePieceDTO();
+	    dto.setPieceType(PieceType.BISHOP.toString());
+	    dto.setPlayerColor(color.toString());
+	    dto.setSymbol(getChar());
+	    
+	    return dto;
 	}
 }

@@ -1,6 +1,8 @@
 package com.rsmith.models;
 import java.util.ArrayList;
 
+import com.rsmith.DTO.GamePieceDTO;
+
 public class Pawn implements GamePiece{
 	private PlayerColor color;
 	private String currentPosition;
@@ -46,5 +48,15 @@ public class Pawn implements GamePiece{
 	    }
 	    
 	    return symbol;
+	}
+	
+	@Override
+	public GamePieceDTO toDTO() {
+	    GamePieceDTO dto = new GamePieceDTO();
+	    dto.setPieceType(PieceType.PAWN.toString());
+	    dto.setPlayerColor(color.toString());
+	    dto.setSymbol(getChar());
+	    
+	    return dto;
 	}
 }

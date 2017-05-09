@@ -1,5 +1,7 @@
 package com.rsmith.models;
 
+import com.rsmith.DTO.LocationDTO;
+
 public class Location {
     private int x;
     private int y;
@@ -17,8 +19,7 @@ public class Location {
         return y;
     }
     
-    public int[] toArray(){
-    	int[] array = {this.x, this.y};
-    	return array;
+    public LocationDTO toDTO(){
+	return new LocationDTO(x,y);
     }
 }

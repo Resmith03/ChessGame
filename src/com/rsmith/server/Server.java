@@ -10,20 +10,35 @@ import com.rsmith.models.Player;
 import com.rsmith.util.Logger;
 
 public class Server implements Runnable {
+    private static Server instance = new Server();
     private static final int PORT = 1321;
     private ServerSocket listener;
-    private List<Player> playerList;
+    private List<SocketManager> managers;
     
-    public Server() throws IOException {
-	listener = new ServerSocket(PORT);
-	playerList = new ArrayList<Player>();
+    private Server() {
+	listener = getServerSocket();
+	managers = new ArrayList<SocketManager>();
     }
     
-    public List<Player> getPlayerList(){
-	return new ArrayList<Player>(playerList);
+    private ServerSocket getServerSocket(){
+	ServerSocket socket = null;
+	
+	try {
+	    socket = new ServerSocket(PORT);
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+	
+	return socket;
     }
     
-
+    public static Server getInstance(){
+	return instance;
+    }
+    
+    public List<SocketManager> getSocketManagers(){
+	return new ArrayList<SocketManager>(managers);
+    }
     
     @Override
     public void run() {
@@ -34,10 +49,12 @@ public class Server implements Runnable {
 		Socket socket = listener.accept();
 		Logger.info("Got client connection...");
 		
-		SocketManager socketManager = new SocketManager(socket,this);
-		String playerUsername = "Player " + (playerList.size() + 1);
-		Player player = new Player(playerUsername, socketManager);
-		playerList.add(player);
+		
+		String playerUsername = "Player " + (managers.size() + 1);
+		Player player = new Player(playerUsername);
+		
+		SocketManager socketManager = new SocketManager(socket, player);
+		managers.add(socketManager);
 		Thread.sleep(100);
 	    } catch (IOException e) {
 		e.printStackTrace();

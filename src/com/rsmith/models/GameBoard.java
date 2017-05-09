@@ -34,25 +34,6 @@ public class GameBoard {
 	}
     }
     
-    public static List<BoardSpace> getDefaultBoard(){
-	List<BoardSpace> spaces = new ArrayList<BoardSpace>();
-	
-	for (int x = 0; x < BOARD_WIDTH; x++) {
-	    for (int y = 0; y < BOARD_HEIGHT; y++) {
-
-		BoardSpace space = new BoardSpace(x, y);
-		GamePiece piece = getDefaultGamePiece(x, y);
-
-		if (piece != null) {
-		    space.setGamePiece(piece);
-		}
-
-		spaces.add(space);
-	    }
-	}
-	
-	return spaces;
-    }
     /*
      * ======================================== 
      * 		DEFAULT BOARD LAYOUT
@@ -179,24 +160,9 @@ public class GameBoard {
 	return gamePiece;
     }
 
-    public boolean move(Player player, Location fromLocation, Location toLocation) {
-	boolean validMove = true;
-	
-	GamePiece fromPiece = getPieceAtLocation(fromLocation);
-	GamePiece toPiece = getPieceAtLocation(toLocation);
-	
-	if(fromPiece != null && fromPiece.getColor().equals(player.getColor())){
-	    if(toPiece != null){
-		game.broadcast("Game Piece: " + toPiece.getType() + " of color: " + toPiece.getColor() + " was successfully captured!");
-	    }
-		
-	    setPieceAtLocation(toLocation, fromPiece);
-	    setPieceAtLocation(fromLocation, null);
-	}else{
-	    validMove = false;
-	}
-	
-	return validMove;
+    public void move(Location fromLocation, Location toLocation) {
+	setPieceAtLocation(toLocation, getPieceAtLocation(fromLocation));
+	setPieceAtLocation(fromLocation, null);
     }
 
     private void setPieceAtLocation(Location location, GamePiece piece) {
@@ -212,26 +178,6 @@ public class GameBoard {
 		break;
 	    }
 	}
-	
-    }
-
-    public void printBoard() {
-	for(int y = 0; y < BOARD_WIDTH;y++){
-	    
-	    String row = (y + 1) + "...  ";
-	    for(int x = 0; x < BOARD_HEIGHT; x++){
-		BoardSpace space = getSpaceAtLocation(new Location(x,y));
-		
-		GamePiece piece = space.getGamePiece();
-		if(piece == null){
-		    row += " - ";
-		}else{
-		    row += " " + piece.getChar() + " ";
-		}
-	    }
-	    game.broadcast(row);
-	}
-	
     }
 
     public boolean isKingsAlive() {
@@ -253,5 +199,9 @@ public class GameBoard {
 	}
 	
 	return kingsAlive;
+    }
+    
+    public List<BoardSpace> getBoardSpaces(){
+	return new ArrayList<BoardSpace>(boardSpaceList);
     }
 }

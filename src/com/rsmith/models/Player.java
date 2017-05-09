@@ -1,27 +1,23 @@
 package com.rsmith.models;
 
-import com.rsmith.server.SocketManager;
-
 public class Player{
     private String username;
     private PlayerColor color;
     private Integer id;
     private static volatile Integer playerCounter = 0; 
-    private SocketManager manager;
-    
+
     private Player() {
 	playerCounter++;
 	id = playerCounter;
     }
 
-    public Player(String username, SocketManager manager) {
+    public Player(String username) {
 	this();
 	this.username = username;
-	this.manager = manager;
     }
 
-    public Player(String username, PlayerColor color, SocketManager manager) {
-	this(username, manager);
+    public Player(String username, PlayerColor color) {
+	this(username);
 	this.color = color;
     }
 
@@ -47,13 +43,5 @@ public class Player{
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Response sendRequest(Request request) {
-	return manager.sendRequest(request);
-    }
-
-    public boolean isConnected() {
-	return manager.isConnected();
     }
 }

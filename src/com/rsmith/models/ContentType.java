@@ -4,5 +4,8 @@ public enum ContentType {
     STRING,
     BOARD,
     PLAYER_LIST, 
-    NONE
+    NONE, 
+    PLAYER, 
+    MOVE, 
+    CHALLENGE
 }

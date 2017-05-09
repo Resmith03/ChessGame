@@ -3,96 +3,88 @@ package com.rsmith.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rsmith.exceptions.InvalidMoveException;
-import com.rsmith.models.BoardSpace;
 import com.rsmith.models.GameBoard;
 import com.rsmith.models.GamePiece;
 import com.rsmith.models.Location;
-import com.rsmith.models.Pawn;
-import com.rsmith.models.PieceType;
-import com.rsmith.models.PlayerColor;
 
 public class RuleService {
     private GameBoard board;
+    private ValidMoveService validMoveService;
     
     public RuleService(GameBoard board){
 	this.board = board;
-    }
-
-    public boolean validMove(Location from, Location to) throws InvalidMoveException{
-	boolean valid = true;
-	
-	BoardSpace fromSpace = board.getSpaceAtLocation(from);
-	BoardSpace toSpace = board.getSpaceAtLocation(to);
-	
-	GamePiece fromPiece = null;
-	if(fromSpace != null){
-	    fromPiece = fromSpace.getGamePiece();
-	}
-	
-	GamePiece toPiece = null;
-	if(toSpace != null){
-	    toPiece = toSpace.getGamePiece();
-	}
-	
-	if(fromPiece == null){
-		valid = false;
-	    throw new InvalidMoveException("No game piece at the source location");
-	}
-	
-	if(!isValidPieceMove(fromPiece, from, to)){
-		if(fromPiece.getType() == PieceType.PAWN){
-			valid = canPawnTake(fromPiece, toPiece, from, to);
-		}
-		else{
-			valid = false;
-			throw new InvalidMoveException("That "+fromPiece.getType().toString()+" cannot reach that space");
-		}
-	}
-	
-	if(!(fromPiece.getType() == PieceType.KNIGHT) && isBlocked(from, to)){
-		valid = false;
-		throw new InvalidMoveException("The path to that space is blocked.");
-	}
-	
-	if(toPiece != null){
-	    if(toPiece.getColor() == fromPiece.getColor()){
-	    	valid = false;
-	    	throw new InvalidMoveException("Cannot capture same color game peice");
-	    }
-	}
-	
-	return valid;
+	validMoveService = new ValidMoveService();
     }
     
-    public boolean canPawnTake(GamePiece fromPiece, GamePiece toPiece, Location from, Location to) throws InvalidMoveException{
+    public boolean validMove(Location from, Location to){
+	return true;
+//	boolean valid = false;
+//	
+//	BoardSpace fromSpace = board.getSpaceAtLocation(from);
+//	BoardSpace toSpace = board.getSpaceAtLocation(to);
+//	
+//	GamePiece fromPiece = null;
+//	if(fromSpace != null){
+//	    fromPiece = fromSpace.getGamePiece();
+//	}
+//	
+//	GamePiece toPiece = null;
+//	if(toSpace != null){
+//	    toPiece = toSpace.getGamePiece();
+//	}
+//	
+//	if(fromPiece == null){
+//	    return false;
+//	}
+//	
+//	if(!isValidPieceMove(fromPiece, from, to)){
+//		if(fromPiece.getType() == PieceType.PAWN && toPiece != null){
+//			valid = canPawnTake(fromPiece, toPiece, from, to);
+//		}
+//		else{
+//			valid = false;
+//		}
+//	}
+//	
+//	if(!(fromPiece.getType() == PieceType.KNIGHT) && isBlocked(from, to)){
+//		valid = false;
+//	}
+//	
+//	if(toPiece != null){
+//	    if(toPiece.getColor() == fromPiece.getColor()){
+//		valid = false;
+//	    }
+//	}
+//	System.out.println("valid move = " + valid);
+//	return valid;
+    }
+    
+    private boolean canPawnTake(GamePiece fromPiece, GamePiece toPiece, Location from, Location to){
     	boolean take = false;
     	if((from.getX()+1 == to.getX()|| from.getX()-1 == to.getX()-1) && (from.getY()+1 == to.getY() || from.getY()-1 == to.getY())){
         	if(toPiece.getColor() != fromPiece.getColor()){
         		take = true;
         	}
     	}
-    	if(!take){
-    		throw new InvalidMoveException("Pawn cannot take that.");
-    	}
+ 
     	return take;
     }
     
-    public boolean isValidPieceMove(GamePiece fromPiece, Location from, Location to){
+    private boolean isValidPieceMove(GamePiece fromPiece, Location from, Location to){
     	boolean valid = false;
     	List<Location> validMoves;
     	switch(fromPiece.getType()){
-    	case PAWN: validMoves = ValidMoveService.getPawnMoves(fromPiece, from);
+    	case PAWN: validMoves = validMoveService.getPawnMoves(fromPiece, from);
     	break;
-    	case ROOK: validMoves = ValidMoveService.getRookMoves(from);
+    	case ROOK: validMoves = validMoveService.getRookMoves(from);
     	break;
-    	case KNIGHT: validMoves = ValidMoveService.getKnightMoves(from);
+    	case KNIGHT: validMoves = validMoveService.getKnightMoves(from);
     	break;
-    	case BISHOP: validMoves = ValidMoveService.getBishopMoves(from);
+    	case BISHOP: validMoves = validMoveService.getBishopMoves(from);
     	break;
-    	case QUEEN: validMoves = ValidMoveService.getQueenMoves(from);
+    	case QUEEN: validMoves = validMoveService.getQueenMoves(from);
     	break;
-    	case KING: validMoves = ValidMoveService.getKingMoves(from);
+    	case KING: validMoves = validMoveService.getKingMoves(from);
     	break;
     	default: validMoves = new ArrayList<Location>();
     	}
@@ -104,136 +96,162 @@ public class RuleService {
     	return valid;
     }
     
-    public boolean isBlocked(Location start, Location end){
+    private boolean isBlocked(Location start, Location end){
     	boolean blocked = false;
-    	int[] startCoords = start.toArray();
-    	int[] endCoords = end.toArray();
     	
-    	if(startCoords[0] < endCoords[0] && startCoords[1] == endCoords[1]){
-    		blocked = checkMoveRight(startCoords, endCoords);
+    	if(start.getX() < end.getX() && start.getY() == end.getY()){
+    		blocked = checkMoveRight(start, end);
     	}
-    	else if(startCoords[0] > endCoords[0] && startCoords[1] == endCoords[1]){
-    		blocked = checkMoveLeft(startCoords, endCoords);
+    	else if(start.getX() > end.getX() && start.getY() == end.getY()){
+    		blocked = checkMoveLeft(start, end);
     	}
-    	else if(startCoords[0] == endCoords[0] && startCoords[1]>endCoords[1]){
-    		blocked = checkMoveUp(startCoords, endCoords);
+    	else if(start.getX() == end.getX() && start.getY()>end.getY()){
+    		blocked = checkMoveUp(start, end);
     	}
-    	else if(startCoords[0] == endCoords[0] && startCoords[1]<endCoords[1]){
-    		blocked = checkMoveDown(startCoords, endCoords);
+    	else if(start.getX() == end.getX() && start.getY()<end.getY()){
+    		blocked = checkMoveDown(start, end);
     	}
-    	else if(startCoords[0]<endCoords[0] && startCoords[1]>endCoords[1]){
-    		blocked = checkMoveUpRight(startCoords, endCoords);
+    	else if(start.getX()<end.getX() && start.getY()>end.getY()){
+    		blocked = checkMoveUpRight(start, end);
     	}
-    	else if(startCoords[0]>endCoords[0] && startCoords[1]>endCoords[1]){
-    		blocked = checkMoveUpLeft(startCoords, endCoords);
+    	else if(start.getX()>end.getX() && start.getY()>end.getY()){
+    		blocked = checkMoveUpLeft(start, end);
     	}
-    	else if(startCoords[0]<endCoords[0] && startCoords[1]<endCoords[1]){
-    		blocked = checkMoveDownRight(startCoords, endCoords);
+    	else if(start.getX()<end.getX() && start.getY()<end.getY()){
+    		blocked = checkMoveDownRight(start, end);
     	}
-    	else if(startCoords[0]>endCoords[0] && startCoords[1]<endCoords[1]){
-    		blocked = checkMoveDownLeft(startCoords, endCoords);
+    	else if(start.getX()>end.getX() && start.getY()<end.getY()){
+    		blocked = checkMoveDownLeft(start, end);
     	}
     	
     	return blocked;
     }
     
-    public boolean checkMoveRight(int[] start, int[] end){
+    private boolean checkMoveRight(Location start, Location end){
     	boolean blocked = false;
-    	while(start[0]+1 < end[0]){
-    		Location space = new Location(start[0]+1, start[1]);
+    	int x = start.getX();
+    	int y = start.getY();
+    	while(x+1 < end.getX()){
+    		Location space = new Location(x+1, y);
     		if(board.getSpaceAtLocation(space).getGamePiece() != null){
     			blocked = true;
     		}
-    		start[0]++;
+    		x++;
     	}
     	return blocked;
     }
     
-    public boolean checkMoveLeft(int[] start, int[] end){
+    private boolean checkMoveLeft(Location start, Location end){
     	boolean blocked = false;
-    	while(start[0]-1 > end[0]){
-    		Location space = new Location(start[0]+1, start[1]);
+    	int x = start.getX();
+    	int y = start.getY();
+    	
+    	while(x-1 > end.getX()){
+    		Location space = new Location(x+1, y);
     		if(board.getSpaceAtLocation(space).getGamePiece() != null){
     			blocked = true;
     		}
-    		start[0]--;
+    		x--;
     	}
     	return blocked;
     }
     
-    public boolean checkMoveUp(int[] start, int[] end){
+    private boolean checkMoveUp(Location start, Location end){
     	boolean blocked = false;
-    	while(start[1]-1 > end[1]){
-    		Location space = new Location(start[0], start[1]-1);
+    	
+    	int x = start.getX();
+    	int y = start.getY();
+    	while(y-1 > end.getY()){
+    		Location space = new Location(x, y-1);
     		if(board.getSpaceAtLocation(space).getGamePiece() != null){
     			blocked = true;
     		}
-    		start[1]--;
+    		y--;
     	}
     	return blocked;
     }
     
-    public boolean checkMoveDown(int[] start, int[] end){
+    private boolean checkMoveDown(Location start, Location end){
     	boolean blocked = false;
-    	while(start[1]+1 < end[1]){
-    		Location space = new Location(start[0], start[1]+1);
+    	
+    	int x = start.getX();
+    	int y = start.getY();
+    	while(y+1 < end.getY()){
+    		Location space = new Location(x, y+1);
     		if(board.getSpaceAtLocation(space).getGamePiece() != null){
     			blocked = true;
     		}
-    		start[1]++;
+    		y++;
     	}
     	return blocked;
     }
     
-    public boolean checkMoveUpRight(int[] start, int[] end){
+    private boolean checkMoveUpRight(Location start, Location end){
     	boolean blocked = false;
-    	while(start[1]-1 > end[1]){
-    		Location space = new Location(start[0]+1, start[1]-1);
+    	
+    	int x = start.getX();
+    	int y = start.getY();
+    	while(y-1 > end.getY()){
+    		Location space = new Location(x+1, y-1);
     		if(board.getSpaceAtLocation(space).getGamePiece() != null){
     			blocked = true;
     		}
-    		start[0]++;
-    		start[1]--;
+    		x++;
+    		y--;
     	}
     	return blocked;
     }
     
-    public boolean checkMoveUpLeft(int[] start, int[] end){
+    private boolean checkMoveUpLeft(Location start, Location end){
     	boolean blocked = false;
-    	while(start[1]-1 > end[1]){
-    		Location space = new Location(start[0]-1, start[1]-1);
+    	
+    	int x = start.getX();
+    	int y = start.getY();
+    	while(y-1 > end.getY()){
+    		Location space = new Location(x-1, y-1);
     		if(board.getSpaceAtLocation(space).getGamePiece() != null){
     			blocked = true;
     		}
-    		start[0]--;
-    		start[1]--;
+    		x--;
+    		y--;
     	}
     	return blocked;
     }
     
-    public boolean checkMoveDownRight(int[] start, int[] end){
+    private boolean checkMoveDownRight(Location start, Location end){
     	boolean blocked = false;
-    	while(start[1]+1 < end[1]){
-    		Location space = new Location(start[0]+1, start[1]+1);
+    	int x = start.getX();
+    	int y = start.getY();
+    	
+    	while(y+1 < end.getY()){
+    		Location space = new Location(x+1, y+1);
     		if(board.getSpaceAtLocation(space).getGamePiece() != null){
     			blocked = true;
     		}
-    		start[0]++;
-    		start[1]++;
+    		x++;
+    		y++;
     	}
     	return blocked;
     }
     
-    public boolean checkMoveDownLeft(int[] start, int[] end){
+    private boolean checkMoveDownLeft(Location start, Location end){
     	boolean blocked = false;
-    	while(start[1]+1 < end[1]){
-    		Location space = new Location(start[0]-1, start[1]+1);
+    	
+    	int x = start.getX();
+    	int y = start.getY();
+    	while(y+1 < end.getY()){
+    		Location space = new Location(x-1, y+1);
     		if(board.getSpaceAtLocation(space).getGamePiece() != null){
     			blocked = true;
     		}
-    		start[0]--;
-    		start[1]++;
+    		x--;
+    		y++;
     	}
     	return blocked;
+    }
+
+    public boolean checkmate() {
+	// TODO process checkmate
+	return false;
     }
 }

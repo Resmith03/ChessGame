@@ -1,5 +1,5 @@
 package com.rsmith.models;
-import java.util.ArrayList;
+import com.rsmith.DTO.GamePieceDTO;
 
 public class Rook implements GamePiece{
 	private PlayerColor color;
@@ -27,5 +27,15 @@ public class Rook implements GamePiece{
 	    }
 	    
 	    return symbol;
+	}
+	
+	@Override
+	public GamePieceDTO toDTO() {
+	    GamePieceDTO dto = new GamePieceDTO();
+	    dto.setPieceType(PieceType.ROOK.toString());
+	    dto.setPlayerColor(color.toString());
+	    dto.setSymbol(getChar());
+	    
+	    return dto;
 	}
 }

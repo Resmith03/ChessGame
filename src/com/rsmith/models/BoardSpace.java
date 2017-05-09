@@ -1,5 +1,7 @@
 package com.rsmith.models;
 
+import com.rsmith.DTO.BoardSpaceDTO;
+
 public class BoardSpace {
     private GamePiece gamePiece;
     private int x;
@@ -25,4 +27,16 @@ public class BoardSpace {
     public int getY() {
         return y;
     }    
+    
+    public BoardSpaceDTO toDTO(){
+	BoardSpaceDTO dto = new BoardSpaceDTO();
+	if(gamePiece != null){
+	    dto.setGamePiece(gamePiece.toDTO());
+	}
+	
+	dto.setX(x);
+	dto.setY(y);
+	
+	return dto;
+    }
 }
