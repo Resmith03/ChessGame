@@ -14,22 +14,25 @@ import com.rsmith.models.game.Player;
 import com.rsmith.services.GameService;
 import com.rsmith.services.Server;
 import com.rsmith.services.SocketService;
+import com.rsmith.util.Logger;
 
 public class RequestHandler implements Runnable {
 
     private SocketReader reader;
     private SocketWriter writer;
     private ObjectMapper mapper;
-
+    private boolean connected;
+    
     public RequestHandler(SocketReader reader, SocketWriter writer) {
 	this.reader = reader;
 	this.writer = writer;
 	mapper = new ObjectMapper();
+	connected=true;
     }
 
     @Override
     public void run() {
-	while (true) {
+	while (connected) {
 
 	    Request request = reader.getRequest();
 	    if (request != null) {
@@ -132,6 +135,8 @@ public class RequestHandler implements Runnable {
 			response = new Response(request.getId(), ContentType.BOARD, MessageType.POST, mapper.writeValueAsString(game.getGameBoard().getBoardSpaces()));
 		    }
 		}
+	    }else{
+		Logger.info("Challenged client was not found in active connections");
 	    }
 
 	} catch (Exception ex) {
@@ -263,5 +268,9 @@ public class RequestHandler implements Runnable {
 	Game game = GameService.getInstance().getGameByPlayerUsername(request.getIpAddress());
 	List<BoardSpace> boardSpaces = game.getGameBoard().getBoardSpaces();
 	return new Response(request.getId(), ContentType.BOARD, MessageType.POST, getValueAsString(boardSpaces));
+    }
+
+    public void setConnected(boolean connected) {
+	this.connected=connected;
     }
 }

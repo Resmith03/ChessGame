@@ -15,12 +15,14 @@ public class SocketWriter implements Runnable {
     private List<Response> responses;
     private PrintWriter writer;
     private ObjectMapper mapper;
+    private boolean connected;
     
     public SocketWriter(Socket socket) throws IOException {
 	requests = new ArrayList<Request>();
 	responses = new ArrayList<Response>();
 	writer = new PrintWriter(socket.getOutputStream(), true);
 	mapper = new ObjectMapper();
+	connected = true;
     }
 
     private void sendRequests() throws JsonProcessingException {
@@ -42,7 +44,7 @@ public class SocketWriter implements Runnable {
 
     @Override
     public void run() {
-	while (true) {
+	while (connected) {
 	    try {
 		sendRequests();
 		sendResponses();
@@ -59,6 +61,10 @@ public class SocketWriter implements Runnable {
 
     public void sendRequest(Request request) {
 	requests.add(request);
+    }
+
+    public void setConnected(boolean connected) {
+	this.connected=connected;
     }
 
 }

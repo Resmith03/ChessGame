@@ -84,6 +84,7 @@ public class Server implements Runnable {
     }
 
     public void removeDisconnectedManager(SocketService manager) {
+	manager.setConnected(false);
 	this.managers.remove(manager);
     }
 }

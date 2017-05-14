@@ -16,17 +16,19 @@ public class SocketReader implements Runnable {
     private List<Request> requests;
     private List<Response> responses;
     private ObjectMapper mapper;
-
+    private boolean connected;
+    
     public SocketReader(Socket socket) throws IOException {
 	mapper = new ObjectMapper();
 	requests = new ArrayList<Request>();
 	responses = new ArrayList<Response>();
 	reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	connected=true;
     }
 
     @Override
     public void run() {
-	while (true) {
+	while (connected) {
 	    try {
 		String line = reader.readLine();
 		if (line != null && !"".equals(line)) {
@@ -119,6 +121,10 @@ public class SocketReader implements Runnable {
 
     public Response getResponseByRequestId(String requestId) {
 	return getResponse(requestId);
+    }
+
+    public void setConnected(boolean connected) {
+	this.connected=connected;
     }
 
 }

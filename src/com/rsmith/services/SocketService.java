@@ -19,9 +19,11 @@ public class SocketService {
     private RequestHandler requestHandler;
     private ConnectionHandler connectionHandler;
     private Socket socket;
-
-    public boolean isConnected() {
-	return connectionHandler.isConnected();
+    
+    public void setConnected(boolean connected){
+	reader.setConnected(connected);
+	writer.setConnected(connected);
+	requestHandler.setConnected(connected);
     }
 
     public SocketService(Socket socket) {
