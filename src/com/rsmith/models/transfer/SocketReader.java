@@ -108,7 +108,7 @@ public class SocketReader implements Runnable {
 
 	Integer attempts = 0;
 
-	while (response == null && attempts < 2000) {
+	while (response == null && attempts < 1000) {
 	    attempts++;
 	    response = findResponse(requestId);
 	    sleep(10);

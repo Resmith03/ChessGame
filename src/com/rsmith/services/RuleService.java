@@ -84,7 +84,7 @@ public class RuleService {
 	switch (piece.getType()) {
 	case PAWN:
 	    validMoves = validationService.getPawnMoves(from, piece.getColor(),
-		    board.getMoveHistory().containsKey(piece));
+		    !board.getMoveHistory().containsKey(piece));
 	    break;
 	case ROOK:
 	    validMoves = validationService.getRookMoves(from);

@@ -1,27 +1,24 @@
 package com.rsmith.models.transfer;
 
+import com.rsmith.services.Server;
 import com.rsmith.services.SocketService;
 import com.rsmith.util.Logger;
 
 public class ConnectionHandler implements Runnable {
 
     private boolean connected;
-    private final int MAX_ATTEMPTS = 10;
-    private final int PING_PAUSE = 5000;
     private SocketService manager;
 
     public ConnectionHandler(SocketService manager) {
 	connected = true;
+	this.manager=manager;
     }
 
     private Response sendPingRequest() {
 	Response response = null;
-	int counter = 0;
 
-	while (MAX_ATTEMPTS < counter && response == null) {
-	    counter++;
-	    response = manager.sendRequest(ContentType.NONE,MessageType.PING,ResponseType.NONE,"");
-	}
+	response = manager.sendRequest(ContentType.NONE,MessageType.PING,ResponseType.NONE,"");
+	
 
 	return response;
     }
@@ -44,10 +41,13 @@ public class ConnectionHandler implements Runnable {
 	    if (sendPingRequest() == null) {
 		Logger.info("Closing connection handler due to invalid ping...");
 		connected = false;
+		break;
 	    }
-
-	    sleep(PING_PAUSE);
+	    
+	    sleep(5000);
 	}
+	Logger.info("<<<<<<<<<<<<<<< DISCONNECTING CLIENT >>>>>>>>>>>>>");
+	Server.getInstance().removeDisconnectedManager(manager);
     }
 
 }
