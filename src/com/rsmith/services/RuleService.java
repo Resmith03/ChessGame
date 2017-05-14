@@ -8,6 +8,7 @@ import com.rsmith.models.board.Location;
 import com.rsmith.models.board.Move;
 import com.rsmith.models.game.GamePiece;
 import com.rsmith.models.game.PieceType;
+import com.rsmith.models.game.Player;
 
 public class RuleService {
     private BoardService board;
@@ -18,8 +19,8 @@ public class RuleService {
 	validationService = new ValidationService();
     }
 
-    public boolean validMove(Move move) {
-
+    public boolean validMove(Player player, Move move) {
+	
 	boolean valid = false;
 
 	BoardSpace fromSpace = board.getSpaceAtLocation(move.getFrom());
@@ -28,17 +29,22 @@ public class RuleService {
 	GamePiece fromPiece = null;
 	if (fromSpace != null) {
 	    fromPiece = fromSpace.getGamePiece();
+	    if(fromPiece == null){
+		return false;
+	    }
+	}else{
+	    return false;
 	}
-
+	
 	GamePiece toPiece = null;
 	if (toSpace != null) {
 	    toPiece = toSpace.getGamePiece();
 	}
-
-	if (fromPiece == null) {
+	
+	if(fromPiece.getColor() != player.getColor()){
 	    return false;
 	}
-
+	
 	if (isValidPieceMove(fromPiece, move.getFrom(), move.getTo())) {
 	    if (fromPiece.getType() == PieceType.PAWN && toPiece != null) {
 		valid = canPawnTake(fromPiece, toPiece, move.getFrom(), move.getTo());
@@ -56,7 +62,7 @@ public class RuleService {
 		valid = false;
 	    }
 	}
-	System.out.println("valid move = " + valid);
+	
 	return valid;
     }
 
@@ -143,7 +149,8 @@ public class RuleService {
 	}
 	return blocked;
     }
-
+    
+    //TODO: fails when piece is far right due to x out of bounds
     private boolean checkMoveLeft(Location start, Location end) {
 	boolean blocked = false;
 	int x = start.getX();

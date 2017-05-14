@@ -40,11 +40,15 @@ public class Game {
 	return player1.getColor().equals(Color.WHITE) ? player1 : player2;
     }
 
-    public boolean move(Move move) {
-	boolean moved = board.move(move);
+    public boolean move(Player player, Move move) {
+	boolean moved = false;
 
-	if (moved) {
-	    updateCurrentPlayer();
+	if (player.getUsername().equals(currentPlayer.getUsername())) {
+	    moved = board.move(currentPlayer, move);
+
+	    if (moved) {
+		updateCurrentPlayer();
+	    }
 	}
 
 	return moved;

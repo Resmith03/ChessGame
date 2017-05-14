@@ -146,6 +146,21 @@ public class RequestHandler implements Runnable {
 	Response response = null;
 
 	try {
+	    Game game = GameService.getInstance().getGameByPlayerUsername(request.getIpAddress());
+	    Player p1 = game.getPlayer1();
+	    Player p2 = game.getPlayer2();
+	    Player requestingPlayer = null;
+	    
+	    SocketService manager = null;
+
+	    if (p1.getUsername().equals(request.getIpAddress())) {
+		requestingPlayer = p1;
+		manager = Server.getInstance().getSocketManagerByIp(p2.getUsername());
+	    } else {
+		requestingPlayer = p2;
+		manager = Server.getInstance().getSocketManagerByIp(p1.getUsername());
+	    }
+		
 	    Move move = new ObjectMapper().readValue(request.getPayload(), Move.class);
 
 	    Location fromDTO = move.getFrom();
@@ -155,20 +170,10 @@ public class RequestHandler implements Runnable {
 	    Location to = new Location(toDTO.getX(), toDTO.getY());
 
 	    Move pieceMove = new Move(new Location(from.getX(), from.getY()), new Location(to.getX(), to.getY()));
-	    Game game = GameService.getInstance().getGameByPlayerUsername(request.getIpAddress());
-	    boolean moved = game.move(pieceMove);
+	    
+	    boolean moved = game.move(requestingPlayer, pieceMove);
 	    
 	    if(moved){
-		Player p1 = game.getPlayer1();
-		Player p2 = game.getPlayer2();
-		
-		SocketService manager = null;
-		
-		if(p1.getUsername().equals(request.getIpAddress())){
-		    manager = Server.getInstance().getSocketManagerByIp(p2.getUsername());
-		}else{
-		    manager = Server.getInstance().getSocketManagerByIp(p1.getUsername());
-		}
 		List<BoardSpace> boardSpaces = game.getGameBoard().getBoardSpaces();
 		manager.sendRequest(ContentType.BOARD, MessageType.POST, ResponseType.NONE, getValueAsString(boardSpaces));
 	    }

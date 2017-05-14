@@ -10,6 +10,7 @@ import com.rsmith.models.board.Color;
 import com.rsmith.models.board.Location;
 import com.rsmith.models.board.Move;
 import com.rsmith.models.game.GamePiece;
+import com.rsmith.models.game.Player;
 import com.rsmith.models.pieces.Bishop;
 import com.rsmith.models.pieces.King;
 import com.rsmith.models.pieces.Knight;
@@ -142,10 +143,10 @@ public class BoardService {
 	return gamePiece;
     }
 
-    public boolean move(Move move) {
+    public boolean move(Player player, Move move) {
 	boolean moved = false;
-
-	if (service.validMove(move)) {
+	
+	if (service.validMove(player, move)) {
 	    addHistory(move);
 	    setPieceAtLocation(move.getTo(), getPieceAtLocation(move.getFrom()));
 	    setPieceAtLocation(move.getFrom(), null);
