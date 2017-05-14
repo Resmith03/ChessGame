@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rsmith.models.game.Game;
 import com.rsmith.util.Logger;
 
 public class Server implements Runnable {
@@ -34,9 +35,18 @@ public class Server implements Runnable {
     public static Server getInstance() {
 	return instance;
     }
-
-    public List<SocketService> getSocketManagers() {
-	return managers;
+    
+    public List<SocketService> getAvailablePlayers(){
+	List<SocketService> availablePlayers = new ArrayList<SocketService>();
+	
+	for(SocketService manager:managers){
+	    Game game = GameService.getInstance().getGameByPlayerUsername(manager.getIpAddress());
+	    if(game == null){
+		availablePlayers.add(manager);
+	    }
+	}
+	
+	return availablePlayers;
     }
     
     public SocketService getSocketManagerByIp(String ip){

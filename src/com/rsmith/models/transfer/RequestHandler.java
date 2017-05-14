@@ -190,7 +190,7 @@ public class RequestHandler implements Runnable {
     private List<Player> getLobbyPlayerList() {
 	List<Player> playerList = new ArrayList<Player>();
 
-	for (SocketService manager : Server.getInstance().getSocketManagers()) {
+	for (SocketService manager : Server.getInstance().getAvailablePlayers()) {
 	    playerList.add(new Player(manager.getIpAddress(), null));
 	}
 
