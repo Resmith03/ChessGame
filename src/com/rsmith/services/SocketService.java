@@ -21,9 +21,11 @@ public class SocketService {
     private Socket socket;
     
     public void setConnected(boolean connected){
-	reader.setConnected(connected);
-	writer.setConnected(connected);
-	requestHandler.setConnected(connected);
+	
+	//TODO: causing early disconnect???
+	//reader.setConnected(connected);
+	//writer.setConnected(connected);
+	//requestHandler.setConnected(connected);
     }
 
     public SocketService(Socket socket) {
